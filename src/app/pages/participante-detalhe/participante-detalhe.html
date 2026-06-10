@@ -1,0 +1,237 @@
+<section class="participant-page">
+  <div class="page-shell">
+    <button type="button" class="back-button" (click)="voltar()">
+      ← Voltar para classificação
+    </button>
+
+    @if (carregando) {
+      <section class="state-card brasil-card">
+        <h1>Carregando participante...</h1>
+        <p>Buscando perfil público e palpites.</p>
+      </section>
+    } @else if (mensagemErro) {
+      <section class="state-card brasil-card error">
+        <h1>Ops, deu ruim</h1>
+        <p>{{ mensagemErro }}</p>
+
+        <button type="button" (click)="carregarParticipante()">
+          Tentar novamente
+        </button>
+      </section>
+    } @else if (participante && resumo) {
+      <header class="participant-hero brasil-card">
+        <div class="participant-avatar">
+          @if (fotoParticipanteUrl) {
+            <img
+              [src]="fotoParticipanteUrl"
+              [alt]="participante.nome"
+            />
+          } @else {
+            <span>{{ iniciaisParticipante }}</span>
+          }
+        </div>
+
+        <div class="participant-info">
+          <span class="hero-chip">Perfil público</span>
+          <h1>{{ participante.nome }}</h1>
+          <p>{{ participante.email }}</p>
+
+          @if (participante.setor) {
+            <small>{{ participante.setor }}</small>
+          }
+        </div>
+
+        <div class="score-card">
+          <span>Total</span>
+          <strong>{{ totalPontos }}</strong>
+          <small>pontos apurados</small>
+        </div>
+      </header>
+
+      <section class="summary-grid">
+        <article class="summary-card brasil-card">
+          <span>Palpites</span>
+          <strong>{{ totalPalpites }}</strong>
+          <small>jogos respondidos</small>
+        </article>
+
+        <article class="summary-card brasil-card">
+          <span>Super palpites</span>
+          <strong>{{ totalSuperPalpites }}</strong>
+          <small>perguntas respondidas</small>
+        </article>
+
+        <article class="summary-card brasil-card">
+          <span>Pontos em jogos</span>
+          <strong>{{ totalPontosJogos }}</strong>
+          <small>resultado + placar exato</small>
+        </article>
+
+        <article class="summary-card brasil-card">
+          <span>Pontos super</span>
+          <strong>{{ totalPontosSuperPalpites }}</strong>
+          <small>super palpites apurados</small>
+        </article>
+      </section>
+
+      <section class="tabs-card brasil-card">
+        <div class="tabs-header">
+          <button
+            type="button"
+            [class.active]="abaAtiva === 'palpites'"
+            (click)="trocarAba('palpites')"
+          >
+            Palpites dos jogos
+          </button>
+
+          <button
+            type="button"
+            [class.active]="abaAtiva === 'super-palpites'"
+            (click)="trocarAba('super-palpites')"
+          >
+            Super palpites
+          </button>
+        </div>
+
+        @if (abaAtiva === 'palpites') {
+          @if (palpites.length === 0) {
+            <div class="empty-box">
+              <strong>Nenhum palpite normal ainda</strong>
+              <p>Esse participante ainda não palpitou em jogos.</p>
+            </div>
+          } @else {
+            <div class="palpites-grid">
+              @for (palpite of palpites; track palpite.id) {
+                <article
+                  class="palpite-card"
+                  [ngClass]="classeResultadoPalpite(palpite)"
+                >
+                  <div class="palpite-top">
+                    <span>{{ palpite.fase }}</span>
+                    <small>{{ palpite.grupo }} · Rodada {{ palpite.rodada_grupo }}</small>
+                  </div>
+
+                  <div class="teams-row">
+                    <div class="team">
+                      <div class="crest">
+                        @if (palpite.jogo.time_casa.brasao_url) {
+                          <img
+                            [src]="palpite.jogo.time_casa.brasao_url"
+                            [alt]="palpite.jogo.time_casa.nome"
+                          />
+                        } @else {
+                          <span>{{ palpite.jogo.time_casa.sigla }}</span>
+                        }
+                      </div>
+
+                      <strong>{{ palpite.jogo.time_casa.nome }}</strong>
+                    </div>
+
+                    <div class="versus">x</div>
+
+                    <div class="team">
+                      <div class="crest">
+                        @if (palpite.jogo.time_fora.brasao_url) {
+                          <img
+                            [src]="palpite.jogo.time_fora.brasao_url"
+                            [alt]="palpite.jogo.time_fora.nome"
+                          />
+                        } @else {
+                          <span>{{ palpite.jogo.time_fora.sigla }}</span>
+                        }
+                      </div>
+
+                      <strong>{{ palpite.jogo.time_fora.nome }}</strong>
+                    </div>
+                  </div>
+
+                  <div class="palpite-info">
+                    <div>
+                      <span>Palpite</span>
+                      <strong>{{ palpite.palpite.descricao }}</strong>
+                    </div>
+
+                    <div>
+                      <span>Placar palpitado</span>
+                      <strong [class.muted]="!temPlacarPalpite(palpite)">
+                        {{ textoPlacarPalpite(palpite) }}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <span>Pontos</span>
+                      <strong>{{ textoPontos(palpite.pontos) }}</strong>
+                    </div>
+                  </div>
+
+                  <footer class="palpite-footer">
+                    <span>{{ palpite.status }}</span>
+                    <small>{{ dataPalpite(palpite) }}</small>
+                  </footer>
+                </article>
+              }
+            </div>
+          }
+        }
+
+        @if (abaAtiva === 'super-palpites') {
+          @if (superPalpites.length === 0) {
+            <div class="empty-box">
+              <strong>Nenhum super palpite ainda</strong>
+              <p>Esse participante ainda não respondeu super palpites.</p>
+            </div>
+          } @else {
+            <div class="super-grid">
+              @for (item of superPalpites; track item.id) {
+                <article class="super-card">
+                  <div class="super-top">
+                    <span>{{ item.tipo }}</span>
+                    <small>{{ item.status }}</small>
+                  </div>
+
+                  <h2>{{ item.titulo }}</h2>
+                  <p>{{ item.descricao }}</p>
+
+                  <div class="super-answer">
+                    <div class="answer-icon">
+                      @if (imagemRespostaSuperPalpite(item)) {
+                        <img
+                          [src]="imagemRespostaSuperPalpite(item)"
+                          [alt]="textoRespostaSuperPalpite(item)"
+                        />
+                      } @else {
+                        <span>{{ siglaRespostaSuperPalpite(item) }}</span>
+                      }
+                    </div>
+
+                    <div>
+                      <span>Resposta</span>
+                      <strong>{{ textoRespostaSuperPalpite(item) }}</strong>
+                    </div>
+                  </div>
+
+                  <div class="super-details">
+                    <div>
+                      <span>Vale</span>
+                      <strong>{{ item.pontos_acerto }} pts</strong>
+                    </div>
+
+                    <div>
+                      <span>Pontos</span>
+                      <strong>{{ textoPontos(item.pontos) }}</strong>
+                    </div>
+
+                    <div>
+                      <span>Fecha em</span>
+                      <strong>{{ dataFechamentoSuperPalpite(item) }}</strong>
+                    </div>
+                  </div>
+                </article>
+              }
+            </div>
+          }
+        }
+      </section>
+    }
+  </div>
+</section>

@@ -48,7 +48,12 @@
           </div>
 
           @if (lider; as liderAtual) {
-            <section class="leader-card">
+            <button
+              type="button"
+              class="leader-card leader-card-button"
+              (click)="abrirParticipante(liderAtual.participante_email)"
+              [attr.aria-label]="'Abrir perfil de ' + nomeParticipanteItem(liderAtual)"
+            >
               <div class="leader-avatar">
                 @if (fotoParticipanteItem(liderAtual)) {
                   <img
@@ -65,7 +70,7 @@
                 <strong>{{ nomeParticipanteItem(liderAtual) }}</strong>
                 <small>{{ liderAtual.total_pontos }} pontos acumulados</small>
               </div>
-            </section>
+            </button>
           }
 
           @if (rankingVisual.length === 0) {
@@ -83,24 +88,31 @@
                 >
                   <span class="ranking-position">{{ textoPosicao(item.posicao) }}</span>
 
-                  <div class="mini-avatar">
-                    @if (fotoParticipanteItem(item)) {
-                      <img
-                        [src]="fotoParticipanteItem(item)"
-                        [alt]="nomeParticipanteItem(item)"
-                      />
-                    } @else {
-                      <span>{{ iniciaisParticipante(item.participante_email) }}</span>
-                    }
-                  </div>
+                  <button
+                    type="button"
+                    class="participant-open-button"
+                    (click)="abrirParticipante(item.participante_email)"
+                    [attr.aria-label]="'Abrir perfil de ' + nomeParticipanteItem(item)"
+                  >
+                    <div class="mini-avatar">
+                      @if (fotoParticipanteItem(item)) {
+                        <img
+                          [src]="fotoParticipanteItem(item)"
+                          [alt]="nomeParticipanteItem(item)"
+                        />
+                      } @else {
+                        <span>{{ iniciaisParticipante(item.participante_email) }}</span>
+                      }
+                    </div>
 
-                  <div class="ranking-person">
-                    <strong>{{ nomeParticipanteItem(item) }}</strong>
+                    <div class="ranking-person">
+                      <strong>{{ nomeParticipanteItem(item) }}</strong>
 
-                    @if (minhaLinha(item)) {
-                      <small>Você</small>
-                    }
-                  </div>
+                      @if (minhaLinha(item)) {
+                        <small>Você</small>
+                      }
+                    </div>
+                  </button>
 
                   <div class="bar-area">
                     <div class="bar-track">
@@ -326,8 +338,16 @@
 
                 <div class="participant-cell">
                   <span>Participante</span>
-                  <strong>{{ nomeParticipanteItem(item) }}</strong>
-                  <small>{{ item.participante_email }}</small>
+
+                  <button
+                    type="button"
+                    class="participant-table-button"
+                    (click)="abrirParticipante(item.participante_email)"
+                    [attr.aria-label]="'Abrir perfil de ' + nomeParticipanteItem(item)"
+                  >
+                    <strong>{{ nomeParticipanteItem(item) }}</strong>
+                    <small>{{ item.participante_email }}</small>
+                  </button>
                 </div>
 
                 <div>

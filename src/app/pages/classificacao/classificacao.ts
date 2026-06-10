@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { catchError, forkJoin, of } from 'rxjs';
+import { Router } from '@angular/router';
 
 import {
   ClassificacaoItem,
@@ -76,6 +77,7 @@ export class Classificacao implements OnInit, OnDestroy {
   constructor(
     private classificacaoService: ClassificacaoService,
     private perfilService: PerfilService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -665,19 +667,15 @@ export class Classificacao implements OnInit, OnDestroy {
       .toUpperCase();
   }
 
+  abrirParticipante(email: string): void {
+    if (!email) {
+      return;
+    }
+
+    this.router.navigate(['/participantes', encodeURIComponent(email)]);
+  }
+
   private normalizarFotoUrl(url: string): string {
-    if (!url) {
-      return '';
-    }
-
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-
-    if (url.startsWith('/')) {
-      return url;
-    }
-
-    return `/${url}`;
+    return this.perfilService.normalizarFotoUrl(url);
   }
 }

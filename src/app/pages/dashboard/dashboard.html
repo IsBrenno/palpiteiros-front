@@ -291,7 +291,12 @@
             <span>Quando os pontos forem apurados, a classificação aparece aqui.</span>
           </div>
         } @else {
-          <div class="ranking-feature">
+          <button
+            type="button"
+            class="ranking-feature ranking-feature-button"
+            (click)="abrirParticipante(liderRanking.email)"
+            [attr.aria-label]="'Abrir perfil de ' + liderRanking.nome"
+          >
             <div class="leader-avatar">
               @if (liderRanking.foto_url) {
                 <img
@@ -308,7 +313,7 @@
               <strong>{{ liderRanking.nome }}</strong>
               <small>{{ liderRanking.pontos }} pontos acumulados</small>
             </div>
-          </div>
+          </button>
 
           <div class="ranking-chart">
             @for (item of rankingHome; track item.email) {
@@ -316,7 +321,12 @@
                 class="ranking-row"
                 [class.me]="item.meu"
               >
-                <div class="ranking-person">
+                <button
+                  type="button"
+                  class="ranking-person ranking-person-button"
+                  (click)="abrirParticipante(item.email)"
+                  [attr.aria-label]="'Abrir perfil de ' + item.nome"
+                >
                   <span class="position">{{ item.posicao }}º</span>
 
                   <div class="avatar">
@@ -331,7 +341,7 @@
                   </div>
 
                   <strong>{{ item.nome }}</strong>
-                </div>
+                </button>
 
                 <div class="ranking-bar-area">
                   <div class="ranking-track">

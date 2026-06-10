@@ -11,6 +11,7 @@ import { Classificacao } from './pages/classificacao/classificacao';
 import { Perfil } from './pages/perfil/perfil';
 import { MainLayout } from './shared/main-layout/main-layout';
 import { authGuard } from './core/guards/auth-guard';
+import { ParticipanteDetalhe } from './pages/participante-detalhe/participante-detalhe';
 
 export const routes: Routes = [
   {
@@ -63,6 +64,10 @@ export const routes: Routes = [
         path: '',
         pathMatch: 'full',
         redirectTo: 'dashboard'
+      },
+      {
+        path: 'participantes/:id',
+        component: ParticipanteDetalhe
       }
     ]
   },

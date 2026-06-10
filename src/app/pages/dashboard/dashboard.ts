@@ -350,6 +350,15 @@ export class Dashboard implements OnInit {
     this.router.navigate(['/classificacao']);
   }
 
+  abrirParticipante(email: string): void {
+    if (!email) {
+      return;
+    }
+
+    this.router.navigate(['/participantes', encodeURIComponent(email)]);
+  }
+
+
   irParaVotacoes(): void {
     this.router.navigate(['/palpites']);
   }

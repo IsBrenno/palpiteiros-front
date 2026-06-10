@@ -879,3 +879,52 @@
     grid-column: span 2;
   }
 }
+
+/* Links para perfil público do participante */
+.leader-card-button {
+  width: 100%;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.leader-card-button:hover strong,
+.participant-open-button:hover .ranking-person strong,
+.participant-table-button:hover strong {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.participant-open-button {
+  display: contents;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.participant-table-button {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  min-width: 0;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.participant-table-button strong,
+.participant-table-button small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
