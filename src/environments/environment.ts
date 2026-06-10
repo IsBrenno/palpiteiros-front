@@ -1,3 +1,3 @@
 export const environment = {
-  BASE_URL: 'http://177.7.35.77:8000'
+  BASE_URL: 'https://api.palpiteiros.optyai.com.br/api/v1'
 };
