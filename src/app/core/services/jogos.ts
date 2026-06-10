@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -110,7 +111,8 @@ export interface JogoDetalheDTO {
   providedIn: 'root'
 })
 export class JogosService {
-  private readonly apiUrl = '/api/v1';
+  private readonly baseUrl = environment.BASE_URL;
+  private readonly apiUrl = this.baseUrl + '/api/v1';
 
   constructor(private http: HttpClient) {}
 

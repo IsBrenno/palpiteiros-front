@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export type SuperPalpiteTipo = 'TIME' | 'OPCAO' | 'NUMERO';
 
@@ -75,7 +76,8 @@ export interface ResponderSuperPalpiteRequest {
   providedIn: 'root'
 })
 export class SuperPalpitesService {
-  private readonly apiUrl = '/api/v1';
+  private readonly baseUrl = environment.BASE_URL;
+  private readonly apiUrl = this.baseUrl + '/api/v1';
 
   constructor(private http: HttpClient) {}
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -39,7 +40,8 @@ export interface FotoPerfilResponse {
   providedIn: 'root'
 })
 export class PerfilService {
-  private readonly apiUrl = '/api/v1';
+  private readonly baseUrl = environment.BASE_URL;
+  private readonly apiUrl = this.baseUrl + '/api/v1';
 
   private readonly perfilSubject = new BehaviorSubject<PerfilUsuario | null>(null);
 
