@@ -1,0 +1,213 @@
+<section class="super-detail-page">
+  <div class="page-shell">
+    <div class="detail-toolbar">
+      <a routerLink="/palpites" class="back-link">
+        <span>←</span>
+        <strong>Voltar para palpites</strong>
+      </a>
+    </div>
+
+    @if (carregando) {
+      <div class="state-card">
+        <h2>Carregando super palpite...</h2>
+        <p>Buscando os dados da pergunta especial.</p>
+      </div>
+    } @else if (erro) {
+      <div class="state-card error">
+        <h2>Ops, deu ruim</h2>
+        <p>{{ erro }}</p>
+      </div>
+    } @else if (superPalpite) {
+      <section class="detail-hero">
+        <div class="hero-content">
+          <span class="eyebrow">Super Palpite</span>
+
+          <h1>{{ superPalpite.titulo }}</h1>
+
+          <p>{{ superPalpite.descricao }}</p>
+
+          <div class="hero-meta">
+            <span>{{ superPalpite.tipo }}</span>
+            <span>{{ superPalpite.pontos_acerto }} pontos</span>
+
+            @if (superPalpite.pontos_parcial > 0) {
+              <span>{{ superPalpite.pontos_parcial }} pontos parciais</span>
+            }
+
+            <span>Fecha: {{ formatarData(superPalpite.fecha_em) }}</span>
+          </div>
+        </div>
+
+        <aside class="status-card">
+          <span>Status</span>
+
+          <strong [class.open]="podeResponder">
+            {{ textoStatus }}
+          </strong>
+
+          <p>
+            {{ podeResponder ? 'Você ainda pode responder ou alterar esse super palpite.' : 'Esse super palpite está somente para consulta.' }}
+          </p>
+        </aside>
+      </section>
+
+      <section class="answer-grid">
+        <section class="answer-card">
+          <div class="card-header">
+            <div>
+              <span>Sua resposta</span>
+              <h2>Escolha seu palpite</h2>
+            </div>
+          </div>
+
+          <div class="current-answer">
+            <span>Resposta atual</span>
+            <strong>{{ respostaAtualTexto }}</strong>
+          </div>
+
+          @if (superPalpite.tipo === 'TIME') {
+            <div class="team-selector">
+              <label for="filtroTimes">Buscar seleção</label>
+
+              <input
+                id="filtroTimes"
+                type="text"
+                placeholder="Digite o nome da seleção..."
+                [(ngModel)]="filtroTimes"
+                [disabled]="!podeResponder"
+              />
+
+              @if (carregandoTimes) {
+                <div class="state-inline">
+                  Carregando seleções...
+                </div>
+              } @else if (timesFiltrados.length === 0) {
+                <div class="state-inline">
+                  Nenhuma seleção encontrada.
+                </div>
+              } @else {
+                <div class="teams-grid">
+                  @for (time of timesFiltrados; track time.id) {
+                    <button
+                      type="button"
+                      class="team-option"
+                      [class.selected]="timeSelecionadoId === time.id"
+                      [disabled]="!podeResponder"
+                      (click)="selecionarTime(time)"
+                    >
+                      <div class="team-crest">
+                        @if (time.brasao_url) {
+                          <img [src]="time.brasao_url" [alt]="time.nome" />
+                        } @else {
+                          <span>{{ siglaTime(time) }}</span>
+                        }
+                      </div>
+
+                      <div class="team-option-info">
+                        <strong>{{ time.nome }}</strong>
+                        <small>{{ siglaTime(time) }}</small>
+
+                        @if (time.grupo) {
+                          <em>{{ time.grupo }}</em>
+                        }
+                      </div>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @if (superPalpite.tipo === 'OPCAO') {
+            <div class="option-selector">
+              @for (opcao of superPalpite.opcoes; track opcao.id) {
+                <button
+                  type="button"
+                  class="option-button"
+                  [class.selected]="opcaoSelecionadaId === opcao.id"
+                  [disabled]="!podeResponder"
+                  (click)="selecionarOpcao(opcao)"
+                >
+                  <span>Opção</span>
+                  <strong>{{ opcao.label }}</strong>
+                </button>
+              }
+            </div>
+          }
+
+          @if (superPalpite.tipo === 'NUMERO') {
+            <div class="number-selector">
+              <label for="valorNumero">Informe seu número</label>
+
+              <input
+                id="valorNumero"
+                type="number"
+                min="0"
+                placeholder="Ex: 120"
+                [(ngModel)]="valorNumero"
+                [disabled]="!podeResponder"
+              />
+            </div>
+          }
+
+          @if (erroResposta) {
+            <div class="feedback error">
+              {{ erroResposta }}
+            </div>
+          }
+
+          @if (sucessoResposta) {
+            <div class="feedback success">
+              {{ sucessoResposta }}
+            </div>
+          }
+
+          <button
+            type="button"
+            class="save-button"
+            [disabled]="!formularioValido || salvando"
+            (click)="salvarResposta()"
+          >
+            {{ textoBotaoSalvar }}
+          </button>
+        </section>
+
+        <aside class="info-card">
+          <h2>Como funciona</h2>
+
+          <div class="info-list">
+            <div>
+              <span>Tipo</span>
+              <strong>{{ superPalpite.tipo }}</strong>
+            </div>
+
+            <div>
+              <span>Regra</span>
+              <strong>{{ superPalpite.regra_apuracao }}</strong>
+            </div>
+
+            <div>
+              <span>Pontos por acerto</span>
+              <strong>{{ superPalpite.pontos_acerto }}</strong>
+            </div>
+
+            <div>
+              <span>Pontos parciais</span>
+              <strong>{{ superPalpite.pontos_parcial }}</strong>
+            </div>
+
+            <div>
+              <span>Abre em</span>
+              <strong>{{ formatarData(superPalpite.abre_em) }}</strong>
+            </div>
+
+            <div>
+              <span>Fecha em</span>
+              <strong>{{ formatarData(superPalpite.fecha_em) }}</strong>
+            </div>
+          </div>
+        </aside>
+      </section>
+    }
+  </div>
+</section>

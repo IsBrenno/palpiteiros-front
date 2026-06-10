@@ -1,0 +1,379 @@
+<section class="dashboard-page">
+  <section class="dashboard-hero">
+    <div class="hero-copy">
+      <span class="eyebrow">Palpiteiros FC</span>
+
+      <h1>
+        A central do seu
+        <strong>bolão da Copa</strong>
+      </h1>
+
+      <p>
+        Veja os próximos jogos, acompanhe seus palpites e fique de olho na classificação da galera.
+      </p>
+
+      <div class="hero-actions">
+        <button type="button" class="primary-action" (click)="irParaJogos()">
+          Ver jogos
+        </button>
+
+        <button type="button" class="ghost-action" (click)="irParaClassificacao()">
+          Ver classificação
+        </button>
+      </div>
+    </div>
+
+    <article class="featured-ticket">
+      <div class="ticket-header">
+        <div>
+          <span>Jogo em destaque</span>
+          <strong>Próxima oportunidade</strong>
+        </div>
+
+        @if (jogoDestaque) {
+          <span
+            class="ticket-status"
+            [class.live]="jogoAoVivo(jogoDestaque)"
+            [class.closed]="!podePalpitarNoJogo(jogoDestaque)"
+          >
+            {{ statusJogo(jogoDestaque) }}
+          </span>
+        }
+      </div>
+
+      @if (loadingJogos) {
+        <div class="ticket-empty">
+          <strong>Carregando jogos...</strong>
+          <span>Buscando as próximas partidas.</span>
+        </div>
+      } @else if (jogoDestaque) {
+        <div class="ticket-match">
+          <div class="ticket-team">
+            <div class="ticket-crest">
+              @if (brasaoTimeCasa(jogoDestaque)) {
+                <img
+                  [src]="brasaoTimeCasa(jogoDestaque)"
+                  [alt]="nomeTimeCasa(jogoDestaque)"
+                />
+              } @else {
+                <span>{{ siglaTimeCasa(jogoDestaque) }}</span>
+              }
+            </div>
+
+            <strong>{{ nomeTimeCasa(jogoDestaque) }}</strong>
+          </div>
+
+          <div class="ticket-center">
+            <span>{{ dataHoraJogo(jogoDestaque) }}</span>
+            <strong>{{ placarOuVersus(jogoDestaque) }}</strong>
+            <small>{{ grupoJogo(jogoDestaque) }}</small>
+          </div>
+
+          <div class="ticket-team">
+            <div class="ticket-crest">
+              @if (brasaoTimeFora(jogoDestaque)) {
+                <img
+                  [src]="brasaoTimeFora(jogoDestaque)"
+                  [alt]="nomeTimeFora(jogoDestaque)"
+                />
+              } @else {
+                <span>{{ siglaTimeFora(jogoDestaque) }}</span>
+              }
+            </div>
+
+            <strong>{{ nomeTimeFora(jogoDestaque) }}</strong>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="ticket-button"
+          (click)="abrirJogo(jogoDestaque)"
+        >
+          {{ textoAcaoJogo(jogoDestaque) }}
+        </button>
+      } @else {
+        <div class="ticket-empty">
+          <strong>Nenhum jogo encontrado</strong>
+          <span>Assim que houver partidas, elas aparecem aqui.</span>
+        </div>
+      }
+    </article>
+  </section>
+
+  <section class="metrics-grid">
+    @for (metric of metricas; track metric.label) {
+      <article class="metric-card">
+        <span>{{ metric.label }}</span>
+        <strong>{{ metric.value }}</strong>
+        <small>{{ metric.helper }}</small>
+      </article>
+    }
+  </section>
+
+  <section class="home-grid">
+    <div class="main-column">
+      <section class="home-card games-card">
+        <div class="section-header">
+          <div>
+            <span>Rodada</span>
+            <h2>Próximos jogos</h2>
+          </div>
+
+          <button type="button" (click)="irParaJogos()">
+            Ver todos
+          </button>
+        </div>
+
+        @if (loadingJogos) {
+          <div class="state-box">
+            <strong>Carregando partidas...</strong>
+            <span>Organizando a rodada para você.</span>
+          </div>
+        } @else if (errorMessage) {
+          <div class="state-box error">
+            <strong>Não foi possível carregar</strong>
+            <span>{{ errorMessage }}</span>
+          </div>
+        } @else if (jogosDaHome.length === 0) {
+          <div class="state-box">
+            <strong>Nenhum jogo disponível</strong>
+            <span>Os jogos aparecerão aqui quando forem cadastrados.</span>
+          </div>
+        } @else {
+          <div class="match-list">
+            @for (jogo of jogosDaHome; track jogo.codigo_externo) {
+              <article class="match-row" (click)="abrirJogo(jogo)">
+                <div class="match-date">
+                  <strong>{{ dataHoraJogo(jogo).split('•')[0] }}</strong>
+                  <span>{{ dataHoraJogo(jogo).split('•')[1] || 'Horário a definir' }}</span>
+                </div>
+
+                <div class="match-teams">
+                  <div class="mini-team">
+                    <div class="mini-crest">
+                      @if (brasaoTimeCasa(jogo)) {
+                        <img
+                          [src]="brasaoTimeCasa(jogo)"
+                          [alt]="nomeTimeCasa(jogo)"
+                        />
+                      } @else {
+                        <span>{{ siglaTimeCasa(jogo) }}</span>
+                      }
+                    </div>
+
+                    <strong>{{ nomeTimeCasa(jogo) }}</strong>
+                  </div>
+
+                  <div class="versus">
+                    {{ placarOuVersus(jogo) }}
+                  </div>
+
+                  <div class="mini-team right">
+                    <strong>{{ nomeTimeFora(jogo) }}</strong>
+
+                    <div class="mini-crest">
+                      @if (brasaoTimeFora(jogo)) {
+                        <img
+                          [src]="brasaoTimeFora(jogo)"
+                          [alt]="nomeTimeFora(jogo)"
+                        />
+                      } @else {
+                        <span>{{ siglaTimeFora(jogo) }}</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <div class="match-action">
+                  <span
+                    class="match-pill"
+                    [class.open]="podePalpitarNoJogo(jogo)"
+                    [class.live]="jogoAoVivo(jogo)"
+                  >
+                    {{ textoAcaoJogo(jogo) }}
+                  </span>
+
+                  <small>{{ faseJogo(jogo) }}</small>
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="home-card guesses-card">
+        <div class="section-header">
+          <div>
+            <span>Meus palpites</span>
+            <h2>Últimas escolhas</h2>
+          </div>
+
+          <button type="button" (click)="irParaJogos()">
+            Palpitar
+          </button>
+        </div>
+
+        @if (carregandoPalpites) {
+          <div class="state-box">
+            <strong>Carregando palpites...</strong>
+            <span>Buscando suas últimas escolhas.</span>
+          </div>
+        } @else if (palpitesErrorMessage) {
+          <div class="state-box error">
+            <strong>Não foi possível carregar</strong>
+            <span>{{ palpitesErrorMessage }}</span>
+          </div>
+        } @else if (ultimosPalpites.length === 0) {
+          <div class="empty-guesses">
+            <div>
+              <strong>Você ainda não tem palpites</strong>
+              <span>Escolha um jogo e entre na disputa da rodada.</span>
+            </div>
+
+            <button type="button" (click)="irParaJogos()">
+              Fazer primeiro palpite
+            </button>
+          </div>
+        } @else {
+          <div class="guess-list">
+            @for (palpite of ultimosPalpites; track palpite.id) {
+              <article class="guess-row">
+                <div
+                  class="guess-icon"
+                  [ngClass]="classePalpite(palpite)"
+                >
+                  {{ resultadoPalpite(palpite) || '?' }}
+                </div>
+
+                <div class="guess-content">
+                  <strong>
+                    {{ palpite.jogo.time_casa }} x {{ palpite.jogo.time_fora }}
+                  </strong>
+
+                  <span>{{ descricaoPalpite(palpite) }}</span>
+                </div>
+
+                <small>{{ dataPalpite(palpite) }}</small>
+              </article>
+            }
+          </div>
+        }
+      </section>
+    </div>
+
+    <aside class="side-column">
+      <section class="home-card ranking-card">
+        <div class="section-header ranking-header">
+          <div>
+            <span>Classificação</span>
+            <h2>Ranking parcial</h2>
+          </div>
+
+          <button type="button" (click)="irParaClassificacao()">
+            Ver
+          </button>
+        </div>
+
+        @if (carregandoClassificacao) {
+          <div class="state-box">
+            <strong>Carregando ranking...</strong>
+            <span>Buscando a classificação real do bolão.</span>
+          </div>
+        } @else if (classificacaoErrorMessage) {
+          <div class="state-box error">
+            <strong>Não foi possível carregar</strong>
+            <span>{{ classificacaoErrorMessage }}</span>
+          </div>
+        } @else if (!rankingTemDados) {
+          <div class="state-box">
+            <strong>Ranking ainda vazio</strong>
+            <span>Quando os pontos forem apurados, a classificação aparece aqui.</span>
+          </div>
+        } @else {
+          <div class="ranking-feature">
+            <div class="leader-avatar">
+              @if (liderRanking.foto_url) {
+                <img
+                  [src]="liderRanking.foto_url"
+                  [alt]="liderRanking.nome"
+                />
+              } @else {
+                <span>{{ liderRanking.iniciais }}</span>
+              }
+            </div>
+
+            <div>
+              <span>Líder do momento</span>
+              <strong>{{ liderRanking.nome }}</strong>
+              <small>{{ liderRanking.pontos }} pontos acumulados</small>
+            </div>
+          </div>
+
+          <div class="ranking-chart">
+            @for (item of rankingHome; track item.email) {
+              <div
+                class="ranking-row"
+                [class.me]="item.meu"
+              >
+                <div class="ranking-person">
+                  <span class="position">{{ item.posicao }}º</span>
+
+                  <div class="avatar">
+                    @if (item.foto_url) {
+                      <img
+                        [src]="item.foto_url"
+                        [alt]="item.nome"
+                      />
+                    } @else {
+                      <span>{{ item.iniciais }}</span>
+                    }
+                  </div>
+
+                  <strong>{{ item.nome }}</strong>
+                </div>
+
+                <div class="ranking-bar-area">
+                  <div class="ranking-track">
+                    <div
+                      class="ranking-fill"
+                      [style.width.%]="item.percentual"
+                    ></div>
+                  </div>
+
+                  <small>{{ item.pontos }} pts</small>
+                </div>
+
+                <span
+                  class="trend"
+                  [class.leader]="item.tendencia === 'Líder'"
+                >
+                  {{ item.tendencia }}
+                </span>
+              </div>
+            }
+          </div>
+
+          <div class="ranking-note real">
+            <strong>Classificação real</strong>
+            <span>{{ resumoRankingTexto }}</span>
+          </div>
+        }
+      </section>
+
+      <section class="home-card pulse-card">
+        <span>Resumo da rodada</span>
+
+        <h2>{{ jogosComVotacaoAberta }}</h2>
+
+        <p>
+          jogos ainda estão com votação aberta para você mandar seu palpite.
+        </p>
+
+        <button type="button" (click)="irParaJogos()">
+          Conferir agora
+        </button>
+      </section>
+    </aside>
+  </section>
+</section>

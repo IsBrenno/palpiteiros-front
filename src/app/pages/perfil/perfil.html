@@ -1,0 +1,223 @@
+<section class="profile-page">
+  <div class="page-shell">
+    <header class="profile-hero brasil-card">
+      <div>
+        <span class="hero-chip">Meu perfil</span>
+        <h1>Configurações da conta</h1>
+        <p>
+          Atualize seus dados, troque sua senha e personalize sua foto no Palpiteiros FC.
+        </p>
+      </div>
+    </header>
+
+    @if (carregando) {
+      <div class="state-card brasil-card">
+        <h2>Carregando perfil...</h2>
+        <p>Buscando suas informações.</p>
+      </div>
+    } @else if (perfil) {
+      <section class="profile-layout">
+        <aside class="profile-card brasil-card">
+          <div class="avatar-panel">
+            <div class="profile-avatar">
+              @if (fotoPerfilUrl) {
+                <img
+                  [src]="fotoPerfilUrl"
+                  [alt]="perfil.nome || perfil.email"
+                />
+              } @else {
+                <span>{{ iniciaisPerfil }}</span>
+              }
+            </div>
+
+            <div class="avatar-info">
+              <strong>{{ perfil.nome || 'Usuário' }}</strong>
+              <span>{{ perfil.email }}</span>
+            </div>
+          </div>
+
+          <input
+            #fotoInput
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            hidden
+            (change)="enviarFoto($event)"
+          />
+
+          <div class="photo-actions">
+            <button
+              type="button"
+              class="photo-primary"
+              [disabled]="enviandoFoto || removendoFoto"
+              (click)="selecionarFoto(fotoInput)"
+            >
+              {{ enviandoFoto ? 'Enviando foto...' : 'Trocar foto' }}
+            </button>
+
+            <button
+              type="button"
+              class="photo-danger"
+              [disabled]="!fotoPerfilUrl || enviandoFoto || removendoFoto"
+              (click)="removerFoto()"
+            >
+              {{ removendoFoto ? 'Removendo...' : 'Remover foto' }}
+            </button>
+          </div>
+
+          <div class="profile-meta">
+            <div>
+              <span>Status</span>
+              <strong>{{ perfil.ativo ? 'Ativo' : 'Inativo' }}</strong>
+            </div>
+
+            <div>
+              <span>Setor</span>
+              <strong>{{ perfil.setor || 'Não informado' }}</strong>
+            </div>
+
+            <div>
+              <span>WhatsApp</span>
+              <strong>{{ perfil.telefone_whatsapp || 'Não informado' }}</strong>
+            </div>
+          </div>
+        </aside>
+
+        <main class="forms-column">
+          @if (mensagemErro) {
+            <div class="feedback error">
+              {{ mensagemErro }}
+            </div>
+          }
+
+          @if (mensagemSucesso) {
+            <div class="feedback success">
+              {{ mensagemSucesso }}
+            </div>
+          }
+
+          <section class="form-card brasil-card">
+            <div class="form-header">
+              <div>
+                <span>Dados básicos</span>
+                <h2>Editar perfil</h2>
+              </div>
+            </div>
+
+            <form (ngSubmit)="salvarPerfil()">
+              <div class="form-grid">
+                <label>
+                  <span>Nome</span>
+                  <input
+                    type="text"
+                    name="nome"
+                    [(ngModel)]="formPerfil.nome"
+                    placeholder="Seu nome"
+                    autocomplete="name"
+                  />
+                </label>
+
+                <label>
+                  <span>E-mail</span>
+                  <input
+                    type="email"
+                    [value]="perfil.email"
+                    disabled
+                  />
+                </label>
+
+                <label>
+                  <span>Setor</span>
+                  <input
+                    type="text"
+                    name="setor"
+                    [(ngModel)]="formPerfil.setor"
+                    placeholder="Ex: Tecnologia"
+                  />
+                </label>
+
+                <label>
+                  <span>Telefone / WhatsApp</span>
+                  <input
+                    type="text"
+                    name="telefone_whatsapp"
+                    [(ngModel)]="formPerfil.telefone_whatsapp"
+                    placeholder="Ex: 41999999999"
+                    inputmode="tel"
+                    autocomplete="tel"
+                  />
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                class="submit-button"
+                [disabled]="salvandoPerfil"
+              >
+                {{ textoBotaoPerfil }}
+              </button>
+            </form>
+          </section>
+
+          <section class="form-card brasil-card">
+            <div class="form-header">
+              <div>
+                <span>Segurança</span>
+                <h2>Alterar senha</h2>
+              </div>
+            </div>
+
+            <form (ngSubmit)="alterarSenha()">
+              <div class="form-grid">
+                <label>
+                  <span>Senha atual</span>
+                  <input
+                    type="password"
+                    name="senhaAtual"
+                    [(ngModel)]="senhaAtual"
+                    placeholder="Digite sua senha atual"
+                    autocomplete="current-password"
+                  />
+                </label>
+
+                <label>
+                  <span>Nova senha</span>
+                  <input
+                    type="password"
+                    name="novaSenha"
+                    [(ngModel)]="novaSenha"
+                    placeholder="Mínimo de 6 caracteres"
+                    autocomplete="new-password"
+                  />
+                </label>
+
+                <label class="full">
+                  <span>Confirmar nova senha</span>
+                  <input
+                    type="password"
+                    name="confirmarNovaSenha"
+                    [(ngModel)]="confirmarNovaSenha"
+                    placeholder="Repita a nova senha"
+                    autocomplete="new-password"
+                  />
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                class="submit-button secondary"
+                [disabled]="salvandoSenha"
+              >
+                {{ textoBotaoSenha }}
+              </button>
+            </form>
+          </section>
+        </main>
+      </section>
+    } @else {
+      <div class="state-card brasil-card error">
+        <h2>Perfil indisponível</h2>
+        <p>Não foi possível encontrar seus dados de perfil.</p>
+      </div>
+    }
+  </div>
+</section>

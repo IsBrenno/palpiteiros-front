@@ -1,0 +1,411 @@
+<section class="jogos-page">
+  <div class="page-title">
+    <span class="page-kicker">Palpiteiros FC</span>
+
+    <h1>Jogos da Copa</h1>
+
+    <p>
+      Filtre as partidas por rodada, fase, time ou data.
+    </p>
+  </div>
+
+  <section class="filters-card">
+    <div class="filter-field">
+      <label>Rodada</label>
+
+      <div
+        class="custom-select"
+        [class.open]="dropdownAberto === 'rodada'"
+      >
+        <button
+          type="button"
+          class="custom-select-trigger"
+          (click)="alternarDropdown('rodada', $event)"
+        >
+          <span>{{ rotuloRodada }}</span>
+
+          <span class="select-chevron" aria-hidden="true">
+            <svg viewBox="0 0 20 20" fill="none">
+              <path
+                d="M5 7.5L10 12.5L15 7.5"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+        </button>
+
+        @if (dropdownAberto === 'rodada') {
+          <div class="custom-options">
+            <button
+              type="button"
+              [class.selected]="!filtros.rodada"
+              (click)="selecionarRodada('', $event)"
+            >
+              Todas
+            </button>
+
+            @for (rodada of rodadasDisponiveis; track rodada) {
+              <button
+                type="button"
+                [class.selected]="filtros.rodada === rodada.toString()"
+                (click)="selecionarRodada(rodada.toString(), $event)"
+              >
+                Rodada {{ rodada }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="filter-field">
+      <label>Fase</label>
+
+      <div
+        class="custom-select"
+        [class.open]="dropdownAberto === 'fase'"
+      >
+        <button
+          type="button"
+          class="custom-select-trigger"
+          (click)="alternarDropdown('fase', $event)"
+        >
+          <span>{{ rotuloFase }}</span>
+
+          <span class="select-chevron" aria-hidden="true">
+            <svg viewBox="0 0 20 20" fill="none">
+              <path
+                d="M5 7.5L10 12.5L15 7.5"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+        </button>
+
+        @if (dropdownAberto === 'fase') {
+          <div class="custom-options">
+            <button
+              type="button"
+              [class.selected]="!filtros.fase"
+              (click)="selecionarFase('', $event)"
+            >
+              Todas
+            </button>
+
+            @for (fase of fasesDisponiveis; track fase) {
+              <button
+                type="button"
+                [class.selected]="filtros.fase === fase"
+                (click)="selecionarFase(fase, $event)"
+              >
+                {{ fase }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="filter-field team-filter">
+      <label>Time</label>
+
+      <div class="autocomplete-wrap">
+        <input
+          type="text"
+          placeholder="Digite um time..."
+          autocomplete="off"
+          [(ngModel)]="filtros.time"
+          (ngModelChange)="aoMudarFiltros()"
+          (focus)="abrirSugestoesTime()"
+          (blur)="fecharSugestoesTime()"
+        />
+
+        @if (mostrarSugestoesTime && sugestoesTime.length > 0) {
+          <div class="suggestions-list">
+            @for (time of sugestoesTime; track time) {
+              <button
+                type="button"
+                (mousedown)="selecionarTime(time)"
+              >
+                {{ time }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="filter-field date-filter">
+      <label>Data</label>
+
+      <div
+        class="date-picker"
+        [class.open]="calendarioAberto"
+      >
+        <button
+          type="button"
+          class="date-trigger"
+          (click)="abrirCalendario($event)"
+        >
+          <span>{{ rotuloData }}</span>
+
+          <span class="date-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path
+                d="M8 3V6"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M16 3V6"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <rect
+                x="3"
+                y="5"
+                width="18"
+                height="16"
+                rx="4"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M3 9H21"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </span>
+        </button>
+
+        @if (calendarioAberto) {
+          <div class="calendar-dropdown">
+            <div class="calendar-header">
+              <button
+                type="button"
+                aria-label="Mês anterior"
+                (click)="mesAnterior($event)"
+              >
+                ←
+              </button>
+
+              <strong>{{ tituloCalendario }}</strong>
+
+              <button
+                type="button"
+                aria-label="Próximo mês"
+                (click)="proximoMes($event)"
+              >
+                →
+              </button>
+            </div>
+
+            <div class="calendar-weekdays">
+              <span>D</span>
+              <span>S</span>
+              <span>T</span>
+              <span>Q</span>
+              <span>Q</span>
+              <span>S</span>
+              <span>S</span>
+            </div>
+
+            <div class="calendar-days">
+              @for (dia of diasCalendario; track dia.chave) {
+                <button
+                  type="button"
+                  [class.outside]="dia.foraDoMes"
+                  [class.today]="dia.hoje"
+                  [class.selected]="dia.selecionado"
+                  (click)="selecionarData(dia.data, $event)"
+                >
+                  {{ dia.dia }}
+                </button>
+              }
+            </div>
+
+            <div class="calendar-footer">
+              <button
+                type="button"
+                (click)="limparData($event)"
+              >
+                Limpar
+              </button>
+
+              <button
+                type="button"
+                (click)="selecionarHoje($event)"
+              >
+                Hoje
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="clear-filters"
+      [disabled]="!temFiltrosAtivos"
+      (click)="limparFiltros()"
+    >
+      Limpar filtros
+    </button>
+  </section>
+
+  @if (loadingJogos) {
+    <div class="state-card">
+      <h2>Carregando jogos...</h2>
+      <p>Buscando as partidas cadastradas no bolão.</p>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="state-card error">
+      <h2>Ops, deu ruim</h2>
+      <p>{{ errorMessage }}</p>
+    </div>
+  }
+
+  @if (!loadingJogos && !errorMessage && jogosFiltrados.length === 0) {
+    <div class="state-card">
+      <h2>Nenhum jogo encontrado</h2>
+      <p>Tente limpar os filtros ou procurar outro time.</p>
+    </div>
+  }
+
+  @if (!loadingJogos && !errorMessage && jogosFiltrados.length > 0) {
+    <div class="list-summary">
+      <span>
+        Mostrando {{ mostrandoInicio }}-{{ mostrandoFim }}
+        de {{ jogosFiltrados.length }} jogos
+      </span>
+
+      @if (temFiltrosAtivos) {
+        <button type="button" (click)="limparFiltros()">
+          Limpar busca
+        </button>
+      }
+    </div>
+
+    <section class="games-list">
+      @for (jogo of jogosPaginados; track jogo.codigo_externo) {
+        <article
+          class="game-card"
+          role="button"
+          tabindex="0"
+          (click)="abrirDetalhesJogo(jogo)"
+          (keydown.enter)="abrirDetalhesJogo(jogo)"
+          (keydown.space)="$event.preventDefault(); abrirDetalhesJogo(jogo)"
+          [attr.aria-label]="'Ver detalhes de ' + jogo.time_casa.nome + ' contra ' + jogo.time_fora.nome"
+        >
+          <div class="game-header">
+            <span>{{ jogo.fase || 'Fase de Grupos' }}</span>
+            <span>{{ jogo.grupo }} · Rodada {{ jogo.rodada_grupo }}</span>
+          </div>
+
+          <div class="teams">
+            <div class="team">
+              @if (jogo.time_casa?.brasao_url) {
+                <img
+                  class="team-crest"
+                  [src]="jogo.time_casa.brasao_url"
+                  [alt]="jogo.time_casa.nome"
+                />
+              } @else {
+                <div class="team-crest-placeholder">
+                  {{ jogo.time_casa.sigla }}
+                </div>
+              }
+
+              <strong>{{ jogo.time_casa.nome }}</strong>
+            </div>
+
+            <div class="score">
+              @if (jogo.placar.casa !== null && jogo.placar.fora !== null) {
+                <span>{{ jogo.placar.casa }}</span>
+                <span>x</span>
+                <span>{{ jogo.placar.fora }}</span>
+              } @else {
+                <span>x</span>
+              }
+            </div>
+
+            <div class="team team-away">
+              @if (jogo.time_fora?.brasao_url) {
+                <img
+                  class="team-crest"
+                  [src]="jogo.time_fora.brasao_url"
+                  [alt]="jogo.time_fora.nome"
+                />
+              } @else {
+                <div class="team-crest-placeholder">
+                  {{ jogo.time_fora.sigla }}
+                </div>
+              }
+
+              <strong>{{ jogo.time_fora.nome }}</strong>
+            </div>
+          </div>
+
+          <div class="game-info">
+            <span>{{ jogo.data_jogo }} às {{ jogo.hora_jogo }}</span>
+
+            <span
+              class="status-pill"
+              [class.live]="jogo.em_andamento"
+              [class.finished]="jogo.finalizado"
+            >
+              {{ jogo.status }}
+            </span>
+          </div>
+        </article>
+      }
+    </section>
+
+    @if (totalPaginas > 1) {
+      <nav class="pagination" aria-label="Paginação de jogos">
+        <button
+          type="button"
+          class="pagination-arrow"
+          [disabled]="paginaAtual === 1"
+          (click)="paginaAnterior()"
+        >
+          ← Anterior
+        </button>
+
+        <div class="pagination-pages">
+          @for (pagina of paginasDisponiveis; track pagina) {
+            <button
+              type="button"
+              [class.active]="pagina === paginaAtual"
+              (click)="irParaPagina(pagina)"
+            >
+              {{ pagina }}
+            </button>
+          }
+        </div>
+
+        <button
+          type="button"
+          class="pagination-arrow"
+          [disabled]="paginaAtual === totalPaginas"
+          (click)="proximaPagina()"
+        >
+          Próxima →
+        </button>
+      </nav>
+    }
+  }
+</section>

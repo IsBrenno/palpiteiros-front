@@ -1,0 +1,146 @@
+<section class="cadastro-page">
+  <div class="paint paint-green"></div>
+  <div class="paint paint-yellow"></div>
+  <div class="paint paint-blue"></div>
+
+  <main class="cadastro-card">
+    <header class="cadastro-header">
+      <a routerLink="/login" class="brand-link" aria-label="Palpiteiros FC">
+        <img
+          src="/assets/Palpiteros.svg"
+          alt="Palpiteiros FC"
+          class="logo"
+        />
+      </a>
+
+      <span class="invite-chip">Cadastro por convite</span>
+
+      <h1>Entrar para o Palpiteiros FC</h1>
+
+      <p>
+        Crie sua conta usando o link de convite recebido e venha disputar o bolão da Copa.
+      </p>
+    </header>
+
+    @if (mensagemErro) {
+      <div class="alert alert-error">
+        {{ mensagemErro }}
+      </div>
+    }
+
+    @if (mensagemSucesso) {
+      <div class="alert alert-success">
+        {{ mensagemSucesso }}
+      </div>
+    }
+
+    @if (conviteValido) {
+      <form class="cadastro-form" (ngSubmit)="criarConta()">
+        <div class="form-grid">
+          <label>
+            <span>Nome</span>
+            <input
+              type="text"
+              name="nome"
+              [(ngModel)]="nome"
+              [disabled]="formularioBloqueado"
+              placeholder="Seu nome"
+              autocomplete="name"
+            />
+          </label>
+
+          <label>
+            <span>E-mail</span>
+            <input
+              type="email"
+              name="email"
+              [(ngModel)]="email"
+              [disabled]="formularioBloqueado"
+              placeholder="seu@email.com"
+              autocomplete="email"
+            />
+          </label>
+
+          <label>
+            <span>Setor</span>
+            <input
+              type="text"
+              name="setor"
+              [(ngModel)]="setor"
+              [disabled]="formularioBloqueado"
+              placeholder="Ex: Comercial"
+            />
+          </label>
+
+          <label>
+            <span>WhatsApp</span>
+            <input
+              type="text"
+              name="telefoneWhatsapp"
+              [(ngModel)]="telefoneWhatsapp"
+              [disabled]="formularioBloqueado"
+              placeholder="41999999999"
+              inputmode="tel"
+              autocomplete="tel"
+            />
+          </label>
+
+          <label>
+            <span>Senha</span>
+            <input
+              type="password"
+              name="password"
+              [(ngModel)]="password"
+              [disabled]="formularioBloqueado"
+              placeholder="Crie uma senha forte"
+              autocomplete="new-password"
+            />
+          </label>
+
+          <label>
+            <span>Confirmar senha</span>
+            <input
+              type="password"
+              name="confirmarPassword"
+              [(ngModel)]="confirmarPassword"
+              [disabled]="formularioBloqueado"
+              placeholder="Digite a senha novamente"
+              autocomplete="new-password"
+            />
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          class="submit-button"
+          [disabled]="formularioBloqueado"
+        >
+          {{ textoBotaoCadastro }}
+        </button>
+
+        <button
+          type="button"
+          class="ghost-button"
+          [disabled]="carregando"
+          (click)="irParaLogin()"
+        >
+          Já tenho conta
+        </button>
+      </form>
+    } @else {
+      <section class="invalid-invite">
+        <div class="invalid-icon">!</div>
+
+        <h2>Link de convite inválido</h2>
+
+        <p>
+          Para criar uma conta, você precisa acessar o Palpiteiros FC por um link de convite válido.
+        </p>
+
+        <button type="button" (click)="irParaLogin()">
+          Voltar para o login
+        </button>
+      </section>
+    }
+  </main>
+</section>

@@ -1,0 +1,369 @@
+<section class="classification-page">
+  <div class="page-shell">
+    <header class="classification-hero brasil-card">
+      <div>
+        <span class="hero-chip">Classificação</span>
+        <h1>Ranking parcial</h1>
+        <p>
+          Acompanhe a disputa do bolão com pontuação dos jogos, placares exatos,
+          super palpites e resultados das partidas já encerradas.
+        </p>
+      </div>
+
+      @if (minhaClassificacao) {
+        <aside class="my-position-card">
+          <span>Minha posição</span>
+          <strong>{{ textoPosicao(minhaClassificacao.posicao) }}</strong>
+          <small>{{ minhaClassificacao.total_pontos }} pontos</small>
+        </aside>
+      }
+    </header>
+
+    @if (carregando) {
+      <div class="state-card brasil-card">
+        <h2>Carregando classificação...</h2>
+        <p>Buscando o ranking atualizado do bolão.</p>
+      </div>
+    } @else if (erro) {
+      <div class="state-card brasil-card error">
+        <h2>Ops, deu ruim</h2>
+        <p>{{ erro }}</p>
+
+        <button type="button" (click)="carregarClassificacao()">
+          Tentar novamente
+        </button>
+      </div>
+    } @else {
+      <section class="classification-layout">
+        <article class="ranking-graph-card brasil-card">
+          <div class="card-top">
+            <div>
+              <span>Ranking visual</span>
+              <h2>Classificação geral</h2>
+            </div>
+
+            <button type="button" (click)="carregarClassificacao()">
+              Atualizar
+            </button>
+          </div>
+
+          @if (lider; as liderAtual) {
+            <section class="leader-card">
+              <div class="leader-avatar">
+                @if (fotoParticipanteItem(liderAtual)) {
+                  <img
+                    [src]="fotoParticipanteItem(liderAtual)"
+                    [alt]="nomeParticipanteItem(liderAtual)"
+                  />
+                } @else {
+                  <span>{{ iniciaisParticipante(liderAtual.participante_email) }}</span>
+                }
+              </div>
+
+              <div>
+                <span>Líder do momento</span>
+                <strong>{{ nomeParticipanteItem(liderAtual) }}</strong>
+                <small>{{ liderAtual.total_pontos }} pontos acumulados</small>
+              </div>
+            </section>
+          }
+
+          @if (rankingVisual.length === 0) {
+            <div class="empty-box">
+              <strong>Ninguém pontuou ainda</strong>
+              <p>Quando os jogos forem apurados, o ranking aparecerá aqui.</p>
+            </div>
+          } @else {
+            <div class="ranking-bars">
+              @for (item of rankingVisual; track item.participante_email) {
+                <div
+                  class="ranking-bar-row"
+                  [class.me]="minhaLinha(item)"
+                  [ngClass]="posicaoClasse(item)"
+                >
+                  <span class="ranking-position">{{ textoPosicao(item.posicao) }}</span>
+
+                  <div class="mini-avatar">
+                    @if (fotoParticipanteItem(item)) {
+                      <img
+                        [src]="fotoParticipanteItem(item)"
+                        [alt]="nomeParticipanteItem(item)"
+                      />
+                    } @else {
+                      <span>{{ iniciaisParticipante(item.participante_email) }}</span>
+                    }
+                  </div>
+
+                  <div class="ranking-person">
+                    <strong>{{ nomeParticipanteItem(item) }}</strong>
+
+                    @if (minhaLinha(item)) {
+                      <small>Você</small>
+                    }
+                  </div>
+
+                  <div class="bar-area">
+                    <div class="bar-track">
+                      <div
+                        class="bar-fill"
+                        [style.width.%]="larguraBarra(item)"
+                      ></div>
+                    </div>
+
+                    <span>{{ item.total_pontos }} pts</span>
+                  </div>
+
+                  <div class="score-pill">
+                    {{ diferencaParaLider(item) }}
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </article>
+
+        <aside class="games-card brasil-card">
+          <div class="card-top">
+            <div>
+              <span>Partidas</span>
+              <h2>Resultados</h2>
+            </div>
+
+            @if (totalJogosAoVivo > 0) {
+              <div class="live-chip">
+                {{ totalJogosAoVivo }} ao vivo
+              </div>
+            }
+          </div>
+
+          <div class="games-summary">
+            <div>
+              <strong>{{ totalJogosComResultado }}</strong>
+              <span>com resultado</span>
+            </div>
+
+            <div>
+              <strong>{{ totalJogosAoVivo }}</strong>
+              <span>ao vivo</span>
+            </div>
+
+            <div>
+              <strong>{{ totalPlacaresExatos }}</strong>
+              <span>placares exatos</span>
+            </div>
+          </div>
+
+          @if (bannersJogos.length === 0) {
+            <div class="empty-box">
+              <strong>Nenhum jogo encerrado ainda</strong>
+              <p>
+                Quando houver jogos ao vivo ou finalizados, eles vão aparecer aqui.
+              </p>
+            </div>
+          } @else {
+            <section
+              class="games-carousel"
+              (mouseenter)="pausarAutoplayBanner()"
+              (mouseleave)="retomarAutoplayBanner()"
+            >
+              <div class="carousel-viewport">
+                <div
+                  class="carousel-track"
+                  [style.transform]="bannerTransform"
+                >
+                  @for (jogo of bannersJogos; track jogo.codigo_externo) {
+                    <article
+                      class="game-banner"
+                      [style.background-image]="estiloBackgroundBanner(jogo)"
+                    >
+                      <div class="game-banner-overlay">
+                        <div class="game-banner-top">
+                          <span
+                            class="game-status"
+                            [ngClass]="statusJogoClasse(jogo)"
+                          >
+                            {{ jogo.status_exibicao }}
+                          </span>
+
+                          <small>
+                            {{ jogo.fase }} · {{ jogo.grupo }} · Rodada {{ jogo.rodada }}
+                          </small>
+                        </div>
+
+                        <div class="game-banner-main">
+                          <div class="banner-team">
+                            <div class="team-crest">
+                              @if (jogo.time_casa.brasao_url) {
+                                <img
+                                  [src]="jogo.time_casa.brasao_url"
+                                  [alt]="jogo.time_casa.nome"
+                                />
+                              } @else {
+                                <span>{{ jogo.time_casa.sigla }}</span>
+                              }
+                            </div>
+
+                            <strong>{{ jogo.time_casa.nome_curto }}</strong>
+                          </div>
+
+                          <div class="banner-score-box">
+                            <span>Placar</span>
+                            <strong>{{ textoPlacarJogo(jogo) }}</strong>
+                          </div>
+
+                          <div class="banner-team">
+                            <div class="team-crest">
+                              @if (jogo.time_fora.brasao_url) {
+                                <img
+                                  [src]="jogo.time_fora.brasao_url"
+                                  [alt]="jogo.time_fora.nome"
+                                />
+                              } @else {
+                                <span>{{ jogo.time_fora.sigla }}</span>
+                              }
+                            </div>
+
+                            <strong>{{ jogo.time_fora.nome_curto }}</strong>
+                          </div>
+                        </div>
+
+                        <div class="game-banner-footer">
+                          <span>{{ vencedorJogo(jogo) }}</span>
+                          <small>{{ jogo.data_jogo }} · {{ jogo.hora_jogo }}</small>
+                        </div>
+                      </div>
+                    </article>
+                  }
+                </div>
+              </div>
+
+              @if (possuiMultiplosBanners) {
+                <button
+                  type="button"
+                  class="carousel-arrow prev"
+                  (click)="bannerAnterior()"
+                  aria-label="Banner anterior"
+                >
+                  ‹
+                </button>
+
+                <button
+                  type="button"
+                  class="carousel-arrow next"
+                  (click)="proximoBanner()"
+                  aria-label="Próximo banner"
+                >
+                  ›
+                </button>
+
+                <div class="carousel-dots">
+                  @for (jogo of bannersJogos; track jogo.codigo_externo; let i = $index) {
+                    <button
+                      type="button"
+                      class="carousel-dot"
+                      [class.active]="i === bannerAtivoIndex"
+                      (click)="selecionarBanner(i)"
+                      [attr.aria-label]="'Ir para o banner ' + (i + 1)"
+                    ></button>
+                  }
+                </div>
+              }
+            </section>
+          }
+        </aside>
+      </section>
+
+      @if (resumo) {
+        <section class="summary-grid">
+          <article class="summary-card brasil-card">
+            <span>Máximo por jogo</span>
+            <strong>{{ resumo.pontos_maximos_por_jogo }}</strong>
+            <small>
+              {{ resumo.pontos_resultado_por_jogo }} pelo resultado +
+              {{ resumo.bonus_placar_exato_por_jogo }} pelo placar
+            </small>
+          </article>
+
+          <article class="summary-card brasil-card">
+            <span>Jogos finalizados</span>
+            <strong>{{ resumo.jogos_finalizados }}</strong>
+            <small>de {{ resumo.total_jogos }} jogos no total</small>
+          </article>
+
+          <article class="summary-card brasil-card">
+            <span>Máximo em jogos</span>
+            <strong>{{ resumo.pontos_maximos_jogos }}</strong>
+            <small>considerando todos os jogos</small>
+          </article>
+
+          <article class="summary-card brasil-card">
+            <span>Máximo total</span>
+            <strong>{{ resumo.pontos_maximos_total }}</strong>
+            <small>jogos + super palpites</small>
+          </article>
+        </section>
+      }
+
+      @if (rankingOrdenado.length > 0) {
+        <section class="ranking-table-card brasil-card">
+          <div class="card-top">
+            <div>
+              <span>Detalhamento</span>
+              <h2>Dados da pontuação</h2>
+            </div>
+          </div>
+
+          <div class="ranking-table">
+            @for (item of rankingOrdenado; track item.participante_email) {
+              <article
+                class="table-row"
+                [class.me]="minhaLinha(item)"
+              >
+                <div>
+                  <span>Posição</span>
+                  <strong>{{ textoPosicao(item.posicao) }}</strong>
+                </div>
+
+                <div class="participant-cell">
+                  <span>Participante</span>
+                  <strong>{{ nomeParticipanteItem(item) }}</strong>
+                  <small>{{ item.participante_email }}</small>
+                </div>
+
+                <div>
+                  <span>Total</span>
+                  <strong>{{ item.total_pontos }}</strong>
+                </div>
+
+                <div>
+                  <span>Jogos</span>
+                  <strong>{{ item.pontos_jogos }}</strong>
+                </div>
+
+                <div>
+                  <span>Super</span>
+                  <strong>{{ item.pontos_super_palpites }}</strong>
+                </div>
+
+                <div>
+                  <span>Acertos</span>
+                  <strong>{{ item.acertos_jogos }}</strong>
+                </div>
+
+                <div>
+                  <span>Placar</span>
+                  <strong>{{ item.placares_exatos }}</strong>
+                </div>
+
+                <div>
+                  <span>Aproveit.</span>
+                  <strong>{{ aproveitamentoResultado(item) }}%</strong>
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      }
+    }
+  </div>
+</section>

@@ -1,0 +1,55 @@
+<div class="login-page">
+  <div class="paint paint-green"></div>
+  <div class="paint paint-yellow"></div>
+  <div class="paint paint-blue"></div>
+  <div class="paint paint-green-bottom"></div>
+  <div class="paint paint-yellow-right"></div>
+
+  <div class="login-card">
+    <div class="login-logo">
+      <img
+        src="/assets/Palpiteros.svg"
+        alt="Bolão da Copa"
+      />
+    </div>
+
+    <div class="login-header">
+      <h1>Entrar</h1>
+      <p>Faça login para acessar seu bolão, palpites e classificação.</p>
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        placeholder="Digite seu email"
+        [(ngModel)]="email"
+      />
+    </div>
+
+    <div class="field">
+      <label for="password">Senha</label>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        placeholder="Digite sua senha"
+        [(ngModel)]="password"
+      />
+    </div>
+
+    @if (errorMessage) {
+      <span class="error">{{ errorMessage }}</span>
+    }
+
+    @if (successMessage) {
+      <span class="success">{{ successMessage }}</span>
+    }
+
+    <button type="button" (click)="entrar()" [disabled]="loading">
+      {{ loading ? 'Entrando...' : 'Entrar' }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,309 @@
+<section class="match-detail-page">
+  <div class="page-shell">
+    <div class="detail-toolbar">
+      <a routerLink="/jogos" class="back-link">
+        <span class="back-icon">←</span>
+        <span>Voltar para jogos</span>
+      </a>
+    </div>
+
+    @if (carregando) {
+      <div class="state-card brasil-card">
+        <h2>Carregando partida...</h2>
+        <p>Buscando os detalhes do jogo.</p>
+      </div>
+    } @else if (erro) {
+      <div class="state-card brasil-card error">
+        <h2>Ops, deu ruim</h2>
+        <p>{{ erro }}</p>
+      </div>
+    } @else if (jogo) {
+      <article class="match-hero brasil-card">
+        <div class="hero-top">
+          <div>
+            <span class="competition-chip">{{ jogo.copa }}</span>
+
+            <h1>{{ jogo.time_casa.nome }} x {{ jogo.time_fora.nome }}</h1>
+
+            <p>
+              {{ jogo.fase }} · {{ jogo.grupo }} · Rodada {{ jogo.rodada_grupo }}
+            </p>
+          </div>
+
+          <div class="status-pill" [class.live]="jogo.status.em_andamento">
+            {{ jogo.status.exibicao }}
+          </div>
+        </div>
+
+        <div class="match-board">
+          <div class="team-side">
+            <div class="crest-frame">
+              @if (jogo.time_casa.brasao_url) {
+                <img
+                  [src]="jogo.time_casa.brasao_url"
+                  [alt]="jogo.time_casa.nome"
+                />
+              } @else {
+                <span>{{ jogo.time_casa.sigla }}</span>
+              }
+            </div>
+
+            <strong>{{ jogo.time_casa.nome_curto || jogo.time_casa.nome }}</strong>
+            <small>{{ jogo.time_casa.sigla }}</small>
+          </div>
+
+          <div class="score-center">
+            <span class="date">{{ jogo.data_jogo }}</span>
+            <strong>{{ textoPlacar }}</strong>
+            <span class="hour">{{ jogo.hora_jogo }}</span>
+          </div>
+
+          <div class="team-side">
+            <div class="crest-frame">
+              @if (jogo.time_fora.brasao_url) {
+                <img
+                  [src]="jogo.time_fora.brasao_url"
+                  [alt]="jogo.time_fora.nome"
+                />
+              } @else {
+                <span>{{ jogo.time_fora.sigla }}</span>
+              }
+            </div>
+
+            <strong>{{ jogo.time_fora.nome_curto || jogo.time_fora.nome }}</strong>
+            <small>{{ jogo.time_fora.sigla }}</small>
+          </div>
+        </div>
+
+        <div class="match-footer">
+          <span>{{ jogo.fonte }}</span>
+          <span>{{ jogo.timezone_exibicao }}</span>
+          <span>Código: {{ jogo.codigo_externo }}</span>
+        </div>
+      </article>
+
+      <section class="content-grid">
+        <aside class="prediction-card brasil-card">
+          <div class="card-header">
+            <div>
+              <h2>Seu palpite</h2>
+              <p>Escolha o resultado e, se quiser, arrisque o placar exato.</p>
+            </div>
+
+            <span
+              class="vote-status"
+              [class.closed]="votacaoBloqueada"
+            >
+              {{ textoStatusVotacao }}
+            </span>
+          </div>
+
+          @if (meuPalpite) {
+            <section class="saved-prediction" [ngClass]="classeResultadoSalvo">
+              <div>
+                <span>Palpite atual</span>
+                <strong>{{ descricaoMeuPalpite }}</strong>
+              </div>
+
+              <div>
+                <span>Placar</span>
+                <strong>{{ textoPlacarPalpiteSalvo }}</strong>
+              </div>
+
+              <div>
+                <span>Pontuação</span>
+                <strong>{{ textoPontosPalpite }}</strong>
+              </div>
+            </section>
+          }
+
+          <div
+            class="prediction-options"
+            [style.grid-template-columns]="gridResumoTemplate"
+          >
+            @for (opcao of opcoesDePalpite; track opcao.resultado) {
+              <button
+                type="button"
+                [disabled]="votacaoBloqueada || salvandoPalpite"
+                [class.selected]="palpiteSelecionado === opcao.resultado"
+                [ngClass]="classeResultado(opcao.resultado)"
+                (click)="selecionarPalpite(opcao.resultado)"
+              >
+                <span>{{ opcao.resultado === 'EMPATE' ? 'Resultado' : 'Vitória' }}</span>
+                <strong>{{ textoBotaoOpcao(opcao) }}</strong>
+              </button>
+            }
+          </div>
+
+          <section class="optional-score">
+            <div class="optional-score-header">
+              <div>
+                <h3>Placar opcional</h3>
+                <p>{{ textoAjudaPlacar }}</p>
+              </div>
+
+              <span>+2 pts</span>
+            </div>
+
+            <div class="score-input-board">
+              <div class="score-team-mini">
+                <strong>{{ jogo.time_casa.nome_curto || jogo.time_casa.nome }}</strong>
+                <small>{{ jogo.time_casa.sigla }}</small>
+              </div>
+
+              <input
+                type="number"
+                min="0"
+                inputmode="numeric"
+                name="golsTimeCasa"
+                placeholder="-"
+                [disabled]="votacaoBloqueada || salvandoPalpite"
+                [(ngModel)]="golsTimeCasa"
+                (ngModelChange)="aoAlterarPlacar()"
+              />
+
+              <span class="score-versus">x</span>
+
+              <input
+                type="number"
+                min="0"
+                inputmode="numeric"
+                name="golsTimeFora"
+                placeholder="-"
+                [disabled]="votacaoBloqueada || salvandoPalpite"
+                [(ngModel)]="golsTimeFora"
+                (ngModelChange)="aoAlterarPlacar()"
+              />
+
+              <div class="score-team-mini right">
+                <strong>{{ jogo.time_fora.nome_curto || jogo.time_fora.nome }}</strong>
+                <small>{{ jogo.time_fora.sigla }}</small>
+              </div>
+            </div>
+
+            <div class="score-actions">
+              <button
+                type="button"
+                [disabled]="votacaoBloqueada || salvandoPalpite"
+                (click)="limparPlacar()"
+              >
+                Limpar placar
+              </button>
+
+              <small>
+                Resultado certo vale 3 pontos. Placar exato dá mais 2.
+              </small>
+            </div>
+          </section>
+
+          @if (opcoesDePalpite.length > 0) {
+            <section class="vote-summary">
+              <div
+                class="vote-summary-top"
+                [style.grid-template-columns]="gridResumoTemplate"
+              >
+                @for (opcao of opcoesDePalpite; track opcao.resultado) {
+                  <div>
+                    <strong>{{ opcao.quantidade }}</strong>
+                    <span>{{ opcao.label }}</span>
+                  </div>
+                }
+              </div>
+
+              <div class="vote-summary-bar">
+                @for (opcao of opcoesDePalpite; track opcao.resultado) {
+                  <div
+                    class="vote-bar-segment"
+                    [ngClass]="classeResultado(opcao.resultado)"
+                    [style.width.%]="percentualOpcao(opcao)"
+                    [title]="opcao.descricao + ' - ' + opcao.percentual + '%'"
+                  ></div>
+                }
+              </div>
+
+              <div class="vote-summary-footer">
+                @if (carregandoResumo) {
+                  <span>Atualizando resumo dos palpites...</span>
+                } @else {
+                  <span>{{ totalPalpites }} votos no total</span>
+                }
+              </div>
+            </section>
+          }
+
+          @if (erroPalpite) {
+            <div class="feedback error">
+              {{ erroPalpite }}
+            </div>
+          }
+
+          @if (erroResumo) {
+            <div class="feedback error">
+              {{ erroResumo }}
+            </div>
+          }
+
+          <button
+            type="button"
+            class="confirm-button"
+            [disabled]="!formularioPalpiteValido"
+            (click)="confirmarPalpite()"
+          >
+            {{ salvandoPalpite ? 'Salvando palpite...' : meuPalpite ? 'Atualizar palpite' : 'Confirmar palpite' }}
+          </button>
+        </aside>
+
+        <section class="info-card brasil-card">
+          <h2>Informações da partida</h2>
+
+          <div class="info-list">
+            <div>
+              <span>Copa</span>
+              <strong>{{ jogo.copa }}</strong>
+            </div>
+
+            <div>
+              <span>Fase</span>
+              <strong>{{ jogo.fase }}</strong>
+            </div>
+
+            <div>
+              <span>Grupo</span>
+              <strong>{{ jogo.grupo }}</strong>
+            </div>
+
+            <div>
+              <span>Rodada</span>
+              <strong>{{ jogo.rodada_api }}</strong>
+            </div>
+
+            <div>
+              <span>Estádio</span>
+              <strong>{{ jogo.local.estadio || 'A definir' }}</strong>
+            </div>
+
+            <div>
+              <span>Cidade</span>
+              <strong>{{ jogo.local.cidade || 'A definir' }}</strong>
+            </div>
+
+            <div>
+              <span>Status</span>
+              <strong>{{ jogo.status.api }}</strong>
+            </div>
+
+            <div>
+              <span>Placar confirmado</span>
+              <strong>{{ jogo.placar.confirmado ? 'Sim' : 'Não' }}</strong>
+            </div>
+
+            <div>
+              <span>Empate no palpite</span>
+              <strong>{{ empatePermitido ? 'Permitido' : 'Não permitido' }}</strong>
+            </div>
+          </div>
+        </section>
+      </section>
+    }
+  </div>
+</section>

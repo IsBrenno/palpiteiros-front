@@ -1,0 +1,78 @@
+<header class="app-header">
+  <a class="brand" routerLink="/dashboard" aria-label="Palpiteiros FC">
+    <img
+      class="brand-logo"
+      src="/assets/Palpiteros.svg"
+      alt="Palpiteiros FC"
+    />
+  </a>
+
+  <nav class="nav-links">
+    <a routerLink="/jogos" routerLinkActive="active">
+      Jogos
+    </a>
+
+    <a routerLink="/palpites" routerLinkActive="active">
+      Palpites
+    </a>
+
+    <a routerLink="/classificacao" routerLinkActive="active">
+      Classificação
+    </a>
+  </nav>
+
+  <div class="profile-area">
+    <details #profileMenu class="profile-menu">
+      <summary class="profile-button" aria-label="Perfil">
+        @if (fotoPerfilUrl) {
+          <img
+            class="profile-photo"
+            [src]="fotoPerfilUrl"
+            [alt]="nomePerfil"
+          />
+        } @else {
+          <span class="profile-initials">
+            {{ iniciaisPerfil }}
+          </span>
+        }
+      </summary>
+
+      <div class="profile-dropdown">
+        <div class="profile-summary">
+          <div class="dropdown-avatar">
+            @if (fotoPerfilUrl) {
+              <img
+                [src]="fotoPerfilUrl"
+                [alt]="nomePerfil"
+              />
+            } @else {
+              <span>{{ iniciaisPerfil }}</span>
+            }
+          </div>
+
+          <div>
+            <strong>{{ nomePerfil }}</strong>
+
+            @if (emailPerfil) {
+              <span>{{ emailPerfil }}</span>
+            } @else {
+              <span>{{ carregandoPerfil ? 'Carregando perfil...' : 'Perfil não carregado' }}</span>
+            }
+          </div>
+        </div>
+
+        <a
+          class="profile-link"
+          routerLink="/perfil"
+          (click)="profileMenu.open = false"
+        >
+          Meu perfil
+        </a>
+
+        <button type="button" class="logout-button" (click)="sair()">
+          Sair
+        </button>
+      </div>
+    </details>
+  </div>
+</header>

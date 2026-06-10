@@ -1,0 +1,254 @@
+<section class="palpites-page">
+  <section class="palpites-hero">
+    <div class="hero-copy">
+      <span class="eyebrow">Palpiteiros FC</span>
+
+      <h1>
+        Faça seus
+        <strong>palpites</strong>
+      </h1>
+
+      <p>
+        Escolha os resultados dos jogos e responda os super palpites especiais da Copa.
+      </p>
+    </div>
+
+    <aside class="hero-card">
+      <span>Resumo da disputa</span>
+
+      <h2>{{ jogosAbertosSemPalpite.length }}</h2>
+
+      <p>
+        jogos estão abertos e ainda não receberam seu palpite.
+      </p>
+
+      <button type="button" (click)="irParaJogos()">
+        Ver todos os jogos
+      </button>
+    </aside>
+  </section>
+
+  <section class="metrics-grid">
+    @for (metric of metricas; track metric.label) {
+      <article class="metric-card">
+        <span>{{ metric.label }}</span>
+        <strong>{{ metric.value }}</strong>
+        <small>{{ metric.helper }}</small>
+      </article>
+    }
+  </section>
+
+  <section class="palpites-grid">
+    <section class="palpites-card super-banner-card">
+      <div class="section-header">
+        <div>
+          <span>Super palpites</span>
+          <h2>Destaques especiais</h2>
+        </div>
+      </div>
+
+      <p class="section-description">
+        Super palpites valem mais pontos e aparecem como desafios especiais da Copa.
+      </p>
+
+      @if (carregandoSuperPalpites) {
+        <div class="state-box">
+          <strong>Carregando super palpites...</strong>
+          <span>Buscando perguntas especiais.</span>
+        </div>
+      } @else if (erroSuperPalpites) {
+        <div class="state-box error">
+          <strong>Não foi possível carregar</strong>
+          <span>{{ erroSuperPalpites }}</span>
+        </div>
+      } @else if (superPalpitesBanner.length === 0) {
+        <div class="state-box">
+          <strong>Nenhum super palpite disponível</strong>
+          <span>Assim que houver perguntas especiais, elas aparecem aqui.</span>
+        </div>
+      } @else {
+        <div class="super-carousel">
+          @if (superPalpitesBanner.length > 1) {
+            <button
+              type="button"
+              class="carousel-arrow left"
+              (click)="bannerAnterior()"
+            >
+              ‹
+            </button>
+          }
+
+          <div class="super-carousel-viewport">
+            <div
+              class="super-carousel-track"
+              [style.transform]="bannerTransform"
+            >
+              @for (superPalpite of superPalpitesBanner; track superPalpite.id) {
+                <article
+                  class="super-banner"
+                  [ngClass]="classeTipoSuperPalpite(superPalpite.tipo)"
+                  [style.background-image]="imagemBannerSuperPalpite(superPalpite)"
+                  (click)="abrirSuperPalpite(superPalpite)"
+                >
+                  <div class="super-banner-overlay">
+                    <div class="super-banner-top">
+                      <span
+                        class="super-status"
+                        [class.open]="superPalpite.esta_aberto"
+                      >
+                        {{ textoStatusSuperPalpite(superPalpite) }}
+                      </span>
+
+                      <span class="super-points">
+                        {{ superPalpite.pontos_acerto }} pts
+                      </span>
+                    </div>
+
+                    <div class="super-banner-content">
+                      <span class="super-kind">
+                        {{ textoTipoSuperPalpite(superPalpite.tipo) }}
+                      </span>
+
+                      <h3>{{ superPalpite.titulo }}</h3>
+
+                      <p>{{ superPalpite.descricao }}</p>
+
+                      <div class="super-banner-answer">
+                        <span>Sua resposta</span>
+                        <strong>{{ textoRespostaSuperPalpite(superPalpite) }}</strong>
+                      </div>
+
+                      <div class="super-banner-footer">
+                        <span>Fecha: {{ dataFechamentoSuperPalpite(superPalpite) }}</span>
+
+                        <button
+                          type="button"
+                          (click)="$event.stopPropagation(); abrirSuperPalpite(superPalpite)"
+                        >
+                          {{ textoAcaoSuperPalpite(superPalpite) }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              }
+            </div>
+          </div>
+
+          @if (superPalpitesBanner.length > 1) {
+            <button
+              type="button"
+              class="carousel-arrow right"
+              (click)="proximoBanner()"
+            >
+              ›
+            </button>
+          }
+        </div>
+
+        @if (superPalpitesBanner.length > 1) {
+          <div class="carousel-dots">
+            @for (superPalpite of superPalpitesBanner; track superPalpite.id; let index = $index) {
+              <button
+                type="button"
+                [class.active]="bannerAtivoIndex === index"
+                (click)="selecionarBanner(index)"
+              >
+                <span>{{ index + 1 }}</span>
+              </button>
+            }
+          </div>
+        }
+      }
+    </section>
+
+    <section class="palpites-card jogos-card">
+      <div class="section-header">
+        <div>
+          <span>Palpites normais</span>
+          <h2>Jogos da rodada</h2>
+        </div>
+
+        <button type="button" (click)="irParaJogos()">
+          Ver jogos
+        </button>
+      </div>
+
+      <p class="section-description">
+        Para palpitar em um jogo, abra a partida e escolha o resultado. O card prioriza jogos que você ainda não respondeu.
+      </p>
+
+      @if (carregandoJogos || carregandoPalpites) {
+        <div class="state-box">
+          <strong>Carregando jogos...</strong>
+          <span>Buscando partidas e seus palpites.</span>
+        </div>
+      } @else if (erroJogos || erroPalpites) {
+        <div class="state-box error">
+          <strong>Não foi possível carregar</strong>
+          <span>{{ erroJogos || erroPalpites }}</span>
+        </div>
+      } @else if (jogosParaExibir.length === 0) {
+        <div class="state-box">
+          <strong>Nenhum jogo disponível</strong>
+          <span>Quando houver jogos para palpitar, eles aparecem aqui.</span>
+        </div>
+      } @else {
+        <div class="jogos-list">
+          @for (jogo of jogosParaExibir; track jogo.codigo_externo) {
+            <article
+              class="jogo-row"
+              [class.respondido]="usuarioJaPalpitouNoJogo(jogo)"
+              (click)="abrirJogo(jogo)"
+            >
+              <div class="jogo-date">
+                <strong>{{ dataHoraJogo(jogo).split('•')[0] }}</strong>
+                <span>{{ dataHoraJogo(jogo).split('•')[1] || 'Horário a definir' }}</span>
+              </div>
+
+              <div class="jogo-match">
+                <div class="team">
+                  <div class="crest">
+                    @if (brasaoTimeCasa(jogo)) {
+                      <img [src]="brasaoTimeCasa(jogo)" [alt]="nomeTimeCasa(jogo)" />
+                    } @else {
+                      <span>{{ siglaTimeCasa(jogo) }}</span>
+                    }
+                  </div>
+
+                  <strong>{{ nomeTimeCasa(jogo) }}</strong>
+                </div>
+
+                <div class="versus">x</div>
+
+                <div class="team right">
+                  <strong>{{ nomeTimeFora(jogo) }}</strong>
+
+                  <div class="crest">
+                    @if (brasaoTimeFora(jogo)) {
+                      <img [src]="brasaoTimeFora(jogo)" [alt]="nomeTimeFora(jogo)" />
+                    } @else {
+                      <span>{{ siglaTimeFora(jogo) }}</span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <div class="jogo-info">
+                <span
+                  class="status-pill"
+                  [class.open]="podePalpitarNoJogo(jogo)"
+                  [class.done]="usuarioJaPalpitouNoJogo(jogo)"
+                >
+                  {{ textoAcaoJogo(jogo) }}
+                </span>
+
+                <small>{{ descricaoPalpiteJogo(jogo) }}</small>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  </section>
+</section>
