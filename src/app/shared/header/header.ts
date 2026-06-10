@@ -38,6 +38,10 @@ export class Header implements OnInit, OnDestroy {
   }
 
   carregarPerfil(): void {
+    if (this.carregandoPerfil) {
+      return;
+    }
+
     this.carregandoPerfil = true;
 
     this.perfilService.buscarMeuPerfil().subscribe({
@@ -58,13 +62,10 @@ export class Header implements OnInit, OnDestroy {
   logout(): void {
     this.auth.logout().subscribe({
       next: () => {
-        this.perfilService.limparPerfil();
-        this.router.navigate(['/login']);
+        this.limparSessaoENavegar();
       },
       error: () => {
-        this.auth.clearTokens();
-        this.perfilService.limparPerfil();
-        this.router.navigate(['/login']);
+        this.limparSessaoENavegar();
       }
     });
   }
@@ -78,23 +79,7 @@ export class Header implements OnInit, OnDestroy {
   }
 
   get fotoPerfilUrl(): string {
-    return this.normalizarFotoUrl(this.perfil?.foto_url || '');
-  }
-
-  private normalizarFotoUrl(url: string): string {
-    if (!url) {
-      return '';
-    }
-
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-
-    if (url.startsWith('/')) {
-      return url;
-    }
-
-    return `/${url}`;
+    return this.perfilService.normalizarFotoUrl(this.perfil?.foto_url || '');
   }
 
   get iniciaisPerfil(): string {
@@ -114,5 +99,11 @@ export class Header implements OnInit, OnDestroy {
     }
 
     return `${partes[0][0]}${partes[1][0]}`.toUpperCase();
+  }
+
+  private limparSessaoENavegar(): void {
+    this.auth.clearTokens();
+    this.perfilService.limparPerfil();
+    this.router.navigate(['/login']);
   }
 }
