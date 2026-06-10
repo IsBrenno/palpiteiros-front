@@ -40,8 +40,8 @@ export interface FotoPerfilResponse {
   providedIn: 'root'
 })
 export class PerfilService {
-  private readonly baseUrl = environment.BASE_URL;
-  private readonly apiUrl = this.baseUrl + '/api/v1';
+  private readonly baseUrl = environment.BASE_URL.replace(/\/$/, '');
+  private readonly apiUrl = `${this.baseUrl}/api/v1`;
 
   private readonly perfilSubject = new BehaviorSubject<PerfilUsuario | null>(null);
 
@@ -129,5 +129,21 @@ export class PerfilService {
 
   get perfilAtual(): PerfilUsuario | null {
     return this.perfilSubject.value;
+  }
+
+  normalizarFotoUrl(url: string): string {
+    if (!url) {
+      return '';
+    }
+
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+
+    if (url.startsWith('/')) {
+      return `${this.baseUrl}${url}`;
+    }
+
+    return `${this.baseUrl}/${url}`;
   }
 }

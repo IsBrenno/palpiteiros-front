@@ -733,18 +733,6 @@ export class Dashboard implements OnInit {
   }
 
   private normalizarFotoUrl(url: string): string {
-    if (!url) {
-      return '';
-    }
-
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-
-    if (url.startsWith('/')) {
-      return url;
-    }
-
-    return `/${url}`;
+    return this.perfilService.normalizarFotoUrl(url);
   }
 }

@@ -89,6 +89,7 @@ export class Perfil implements OnInit {
     if (!nome) {
       this.mensagemErro = 'O nome não pode ficar vazio.';
       this.mensagemSucesso = '';
+      this.cdr.detectChanges();
       return;
     }
 
@@ -136,18 +137,21 @@ export class Perfil implements OnInit {
     if (!this.senhaAtual.trim()) {
       this.mensagemErro = 'Informe sua senha atual.';
       this.mensagemSucesso = '';
+      this.cdr.detectChanges();
       return;
     }
 
     if (this.novaSenha.length < 6) {
       this.mensagemErro = 'A nova senha deve ter pelo menos 6 caracteres.';
       this.mensagemSucesso = '';
+      this.cdr.detectChanges();
       return;
     }
 
     if (this.novaSenha !== this.confirmarNovaSenha) {
       this.mensagemErro = 'A confirmação da nova senha não confere.';
       this.mensagemSucesso = '';
+      this.cdr.detectChanges();
       return;
     }
 
@@ -210,6 +214,7 @@ export class Perfil implements OnInit {
     if (erroValidacao) {
       this.mensagemErro = erroValidacao;
       this.mensagemSucesso = '';
+      this.cdr.detectChanges();
       return;
     }
 
@@ -284,28 +289,13 @@ export class Perfil implements OnInit {
     });
   }
 
- get fotoPerfilUrl(): string {
-    return this.normalizarFotoUrl(this.perfil?.foto_url || '');
-  }
-
-  private normalizarFotoUrl(url: string): string {
-    if (!url) {
-      return '';
-    }
-
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-
-    if (url.startsWith('/')) {
-      return url;
-    }
-
-    return `/${url}`;
+  get fotoPerfilUrl(): string {
+    return this.perfilService.normalizarFotoUrl(this.perfil?.foto_url || '');
   }
 
   get iniciaisPerfil(): string {
     const nome = this.perfil?.nome || this.perfil?.email || 'Usuário';
+
     const partes = nome
       .replace(/[._-]+/g, ' ')
       .split(' ')
