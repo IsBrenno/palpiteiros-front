@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { JogosService, Jogo } from '../../core/services/jogos';
@@ -27,7 +27,7 @@ interface PalpiteMetric {
   templateUrl: './palpites.html',
   styleUrl: './palpites.scss'
 })
-export class Palpites implements OnInit {
+export class Palpites implements OnInit, OnDestroy {
   jogos: Jogo[] = [];
   meusPalpites: PalpiteDTO[] = [];
   superPalpites: SuperPalpite[] = [];
@@ -41,6 +41,9 @@ export class Palpites implements OnInit {
   erroSuperPalpites = '';
 
   bannerAtivoIndex = 0;
+
+  private bannerAutoplayId: ReturnType<typeof setInterval> | null = null;
+  private readonly bannerAutoplayDelay = 5500;
 
   /**
    * Quando você gerar as imagens, salve em:
@@ -71,6 +74,10 @@ export class Palpites implements OnInit {
     this.carregarJogos();
     this.carregarMeusPalpites();
     this.carregarSuperPalpites();
+  }
+
+  ngOnDestroy(): void {
+    this.pararAutoplayBanner();
   }
 
   carregarJogos(): void {
@@ -121,11 +128,16 @@ export class Palpites implements OnInit {
   carregarSuperPalpites(): void {
     this.carregandoSuperPalpites = true;
     this.erroSuperPalpites = '';
+    this.pararAutoplayBanner();
 
     this.superPalpitesService.listarSuperPalpites().subscribe({
       next: (response) => {
         this.superPalpites = response.data || [];
         this.bannerAtivoIndex = 0;
+
+        this.ajustarBannerAtivo();
+        this.iniciarAutoplayBanner();
+
         this.carregandoSuperPalpites = false;
         this.cdr.detectChanges();
       },
@@ -133,8 +145,11 @@ export class Palpites implements OnInit {
         console.error('[Palpites] Erro ao carregar super palpites:', error);
 
         this.superPalpites = [];
+        this.bannerAtivoIndex = 0;
         this.erroSuperPalpites = 'Não foi possível carregar os super palpites.';
         this.carregandoSuperPalpites = false;
+
+        this.pararAutoplayBanner();
         this.cdr.detectChanges();
       }
     });
@@ -202,34 +217,59 @@ export class Palpites implements OnInit {
     return [...pendentesAbertos, ...respondidos, ...fechados];
   }
 
+  get possuiMultiplosBanners(): boolean {
+    return this.superPalpitesBanner.length > 1;
+  }
+
   get bannerTransform(): string {
     return `translateX(-${this.bannerAtivoIndex * 100}%)`;
   }
 
   bannerAnterior(): void {
-    if (this.superPalpitesBanner.length === 0) {
+    const total = this.superPalpitesBanner.length;
+
+    if (total <= 1) {
       return;
     }
 
     this.bannerAtivoIndex =
       this.bannerAtivoIndex === 0
-        ? this.superPalpitesBanner.length - 1
+        ? total - 1
         : this.bannerAtivoIndex - 1;
+
+    this.reiniciarAutoplayBanner();
   }
 
   proximoBanner(): void {
-    if (this.superPalpitesBanner.length === 0) {
+    const total = this.superPalpitesBanner.length;
+
+    if (total <= 1) {
       return;
     }
 
     this.bannerAtivoIndex =
-      this.bannerAtivoIndex === this.superPalpitesBanner.length - 1
+      this.bannerAtivoIndex === total - 1
         ? 0
         : this.bannerAtivoIndex + 1;
+
+    this.reiniciarAutoplayBanner();
   }
 
   selecionarBanner(index: number): void {
+    if (index < 0 || index >= this.superPalpitesBanner.length) {
+      return;
+    }
+
     this.bannerAtivoIndex = index;
+    this.reiniciarAutoplayBanner();
+  }
+
+  pausarAutoplayBanner(): void {
+    this.pararAutoplayBanner();
+  }
+
+  retomarAutoplayBanner(): void {
+    this.iniciarAutoplayBanner();
   }
 
   imagemBannerSuperPalpite(superPalpite: SuperPalpite): string {
@@ -240,7 +280,12 @@ export class Palpites implements OnInit {
     }
 
     return `
-      linear-gradient(90deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.54), rgba(15, 23, 42, 0.2)),
+      linear-gradient(
+        90deg,
+        rgba(15, 23, 42, 0.92),
+        rgba(15, 23, 42, 0.55),
+        rgba(15, 23, 42, 0.22)
+      ),
       url("${imagem}")
     `;
   }
@@ -395,7 +440,9 @@ export class Palpites implements OnInit {
       return null;
     }
 
-    return this.meusPalpites.find((palpite) => palpite.codigo_jogo === codigoJogo) || null;
+    return this.meusPalpites.find((palpite) => {
+      return palpite.codigo_jogo === codigoJogo;
+    }) || null;
   }
 
   textoAcaoJogo(jogo: Jogo): string {
@@ -537,6 +584,57 @@ export class Palpites implements OnInit {
       hour: '2-digit',
       minute: '2-digit'
     }).format(data);
+  }
+
+  private ajustarBannerAtivo(): void {
+    if (this.superPalpitesBanner.length === 0) {
+      this.bannerAtivoIndex = 0;
+      return;
+    }
+
+    if (this.bannerAtivoIndex >= this.superPalpitesBanner.length) {
+      this.bannerAtivoIndex = 0;
+    }
+  }
+
+  private iniciarAutoplayBanner(): void {
+    this.pararAutoplayBanner();
+
+    if (this.superPalpitesBanner.length <= 1) {
+      return;
+    }
+
+    this.bannerAutoplayId = setInterval(() => {
+      this.avancarBannerAutomaticamente();
+    }, this.bannerAutoplayDelay);
+  }
+
+  private pararAutoplayBanner(): void {
+    if (this.bannerAutoplayId) {
+      clearInterval(this.bannerAutoplayId);
+      this.bannerAutoplayId = null;
+    }
+  }
+
+  private reiniciarAutoplayBanner(): void {
+    this.iniciarAutoplayBanner();
+    this.cdr.detectChanges();
+  }
+
+  private avancarBannerAutomaticamente(): void {
+    const total = this.superPalpitesBanner.length;
+
+    if (total <= 1) {
+      this.pararAutoplayBanner();
+      return;
+    }
+
+    this.bannerAtivoIndex =
+      this.bannerAtivoIndex === total - 1
+        ? 0
+        : this.bannerAtivoIndex + 1;
+
+    this.cdr.detectChanges();
   }
 
   private timestampJogo(jogo: Jogo): number {
