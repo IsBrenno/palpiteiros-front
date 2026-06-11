@@ -985,3 +985,146 @@
     font-size: 0.74rem !important;
   }
 }
+
+/* =========================================================
+   Correção final refinada — Placar opcional e resumo de votos
+   ========================================================= */
+
+@media (max-width: 760px) {
+  /*
+    Placar opcional:
+    Time casa | input casa | x | input fora | Time fora
+    O x ganha uma coluna própria maior para não encostar no input.
+  */
+  .optional-score .score-input-board {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 52px 40px 52px minmax(0, 1fr) !important;
+    gap: 6px !important;
+    align-items: center !important;
+  }
+
+  .optional-score .score-team-mini,
+  .optional-score .score-team-mini.right {
+    grid-column: auto !important;
+    min-width: 0 !important;
+    text-align: center !important;
+    justify-self: stretch !important;
+  }
+
+  .optional-score .score-team-mini strong {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 28px !important;
+
+    display: -webkit-box !important;
+    overflow: hidden !important;
+
+    font-size: 0.78rem !important;
+    line-height: 1.05 !important;
+    text-align: center !important;
+    white-space: normal !important;
+    text-overflow: ellipsis !important;
+
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+  }
+
+  .optional-score .score-team-mini small {
+    display: block !important;
+    margin-top: 2px !important;
+    font-size: 0.66rem !important;
+    line-height: 1 !important;
+    text-align: center !important;
+  }
+
+  .optional-score .score-input-board input {
+    width: 52px !important;
+    height: 48px !important;
+    min-width: 0 !important;
+    padding: 0 4px !important;
+    justify-self: center !important;
+    text-align: center !important;
+    font-size: 1.35rem !important;
+    z-index: 1 !important;
+  }
+
+  .optional-score .score-versus {
+    width: 40px !important;
+    height: 48px !important;
+    display: grid !important;
+    place-items: center !important;
+    justify-self: center !important;
+    align-self: center !important;
+
+    color: var(--color-text-muted, #6b7280) !important;
+    font-family: var(--font-display, 'Baloo 2', system-ui) !important;
+    font-size: 1.25rem !important;
+    font-weight: 1000 !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    z-index: 0 !important;
+  }
+
+  /*
+    Resumo dos palpites:
+    desfaz o grid de 1 coluna que foi forçado antes.
+    Agora fica lado a lado novamente.
+  */
+  .vote-summary-top {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(82px, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  .vote-summary-top div {
+    min-width: 0 !important;
+    padding: 10px 6px !important;
+    border-radius: 16px !important;
+    background: rgba(255, 255, 255, 0.68) !important;
+    text-align: center !important;
+  }
+
+  .vote-summary-top strong {
+    font-size: 1.25rem !important;
+  }
+
+  .vote-summary-top span {
+    max-width: 100% !important;
+    display: block !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: 0.78rem !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .optional-score .score-input-board {
+    grid-template-columns: minmax(0, 1fr) 46px 34px 46px minmax(0, 1fr) !important;
+    gap: 5px !important;
+  }
+
+  .optional-score .score-input-board input {
+    width: 46px !important;
+    height: 44px !important;
+    font-size: 1.2rem !important;
+  }
+
+  .optional-score .score-versus {
+    width: 34px !important;
+    height: 44px !important;
+    font-size: 1.12rem !important;
+  }
+
+  .optional-score .score-team-mini strong {
+    font-size: 0.72rem !important;
+  }
+
+  .optional-score .score-team-mini small {
+    font-size: 0.62rem !important;
+  }
+
+  .vote-summary-top {
+    grid-template-columns: repeat(auto-fit, minmax(74px, 1fr)) !important;
+  }
+}
