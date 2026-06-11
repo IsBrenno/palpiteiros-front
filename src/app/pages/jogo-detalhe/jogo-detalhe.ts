@@ -996,3 +996,4 @@ export class JogoDetalhe implements OnInit {
       .toUpperCase();
   }
 }
+
