@@ -1025,3 +1025,52 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Correção do botão clicável do participante no ranking */
+.ranking-person-button {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+  border: 0 !important;
+  outline: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent !important;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ranking-person-button .position {
+  flex: 0 0 auto;
+}
+
+.ranking-person-button .avatar {
+  flex: 0 0 auto;
+}
+
+.ranking-person-button strong {
+  min-width: 0;
+  max-width: 100%;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text, #111827);
+  font-weight: 1000;
+}
+
+.ranking-person-button:hover strong {
+  color: var(--color-primary, #2563eb);
+  text-decoration: underline;
+}
+
+.ranking-person-button:focus-visible {
+  border-radius: 14px;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.28);
+}
