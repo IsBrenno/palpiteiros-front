@@ -2,6 +2,11 @@
   display: block;
 }
 
+.super-detail-page,
+.super-detail-page * {
+  box-sizing: border-box;
+}
+
 .super-detail-page {
   min-height: calc(100vh - 80px);
   padding: 28px 24px 56px;
@@ -276,13 +281,23 @@
 .number-selector {
   display: grid;
   gap: 14px;
+  min-width: 0;
 }
 
-.team-selector label,
-.number-selector label {
-  color: var(--color-text-muted, #6b7280);
-  font-size: 0.86rem;
-  font-weight: 900;
+.team-selector input,
+.number-selector input {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(229, 231, 235, 0.95);
+  background: #ffffff;
+  color: var(--color-text, #111827);
+  font-weight: 800;
+  outline: none;
 }
 
 .team-selector input,
