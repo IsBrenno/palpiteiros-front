@@ -732,3 +732,362 @@
     display: none;
   }
 }
+
+/* =========================================================
+   Responsividade corrigida — Página de palpites
+   Mantém jogos em 3 colunas no mobile:
+   Time casa | x | Time fora
+   Também corrige badges dos banners de super palpites
+   ========================================================= */
+
+.palpites-page,
+.palpites-page * {
+  box-sizing: border-box;
+}
+
+/* Compatibilidade com o HTML atual */
+.super-status,
+.super-points,
+.banner-status,
+.banner-points {
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 1000;
+}
+
+.super-status,
+.banner-status {
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.super-status.open,
+.banner-status.open {
+  background: rgba(22, 163, 74, 0.2);
+  color: #bbf7d0;
+}
+
+.super-points,
+.banner-points {
+  background: rgba(250, 204, 21, 0.2);
+  color: #fde68a;
+}
+
+@media (max-width: 700px) {
+  .palpites-page {
+    padding: 16px 12px 42px;
+    overflow-x: hidden;
+  }
+
+  .palpites-hero,
+  .metrics-grid,
+  .palpites-grid {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .hero-copy,
+  .hero-card,
+  .palpites-card {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 18px;
+    border-radius: 26px;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(2.6rem, 14vw, 4.2rem);
+  }
+
+  .hero-copy p,
+  .hero-card p,
+  .section-description {
+    font-size: 0.94rem;
+    line-height: 1.4;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .metric-card {
+    padding: 16px;
+  }
+
+  .section-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .section-header h2 {
+    font-size: 1.9rem;
+  }
+
+  .section-header button {
+    width: 100%;
+  }
+
+  /*
+    Banner de super palpites no mobile.
+    Deixa o texto legível e evita conteúdo espremido.
+  */
+  .super-banner-card {
+    padding: 18px;
+  }
+
+  .super-carousel,
+  .super-carousel-viewport,
+  .super-banner {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .super-banner,
+  .super-banner-overlay {
+    min-height: 420px;
+  }
+
+  .super-banner {
+    border-radius: 26px;
+    background-position: center;
+  }
+
+  .super-banner-overlay {
+    padding: 20px;
+  }
+
+  .super-banner-top {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .super-banner-content {
+    max-width: 100%;
+    gap: 10px;
+  }
+
+  .super-banner-content h3 {
+    font-size: clamp(2rem, 11vw, 3.2rem);
+    line-height: 0.95;
+  }
+
+  .super-banner-content p {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 0.92rem;
+    line-height: 1.35;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
+  .super-banner-answer {
+    max-width: 100%;
+  }
+
+  .super-banner-answer strong {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .super-banner-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .super-banner-footer button {
+    width: 100%;
+  }
+
+  .carousel-arrow {
+    display: none;
+  }
+
+  .carousel-dots {
+    margin-top: 12px;
+  }
+
+  /*
+    Lista de jogos:
+    A linha vira card em 1 coluna,
+    mas o confronto continua em 3 colunas.
+  */
+  .jogo-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .jogo-date {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .jogo-date strong,
+  .jogo-date span {
+    min-width: 0;
+  }
+
+  .jogo-match {
+    grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr);
+    gap: 8px;
+    align-items: center;
+  }
+
+  .jogo-match .team,
+  .jogo-match .team.right {
+    min-width: 0;
+    display: grid;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .jogo-match .team {
+    grid-template-columns: 42px minmax(0, 1fr);
+    justify-content: initial;
+  }
+
+  .jogo-match .team.right {
+    grid-template-columns: minmax(0, 1fr) 42px;
+    justify-content: initial;
+  }
+
+  .jogo-match .team strong {
+    min-width: 0;
+    max-width: 100%;
+
+    display: -webkit-box;
+    overflow: hidden;
+
+    font-size: 0.9rem;
+    line-height: 1.05;
+    white-space: normal;
+    text-overflow: ellipsis;
+
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .jogo-match .team.right strong {
+    text-align: right;
+  }
+
+  .crest {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+  }
+
+  .crest img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .crest span {
+    font-size: 0.72rem;
+  }
+
+  .versus {
+    width: 38px;
+    height: 38px;
+    justify-self: center;
+    align-self: center;
+  }
+
+  .jogo-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    justify-items: initial;
+  }
+
+  .jogo-info small {
+    min-width: 0;
+    text-align: right;
+    line-height: 1.25;
+  }
+
+  .status-pill {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 420px) {
+  .palpites-page {
+    padding-inline: 10px;
+  }
+
+  .hero-copy,
+  .hero-card,
+  .palpites-card {
+    padding: 16px;
+  }
+
+  .super-banner,
+  .super-banner-overlay {
+    min-height: 400px;
+  }
+
+  .super-banner-overlay {
+    padding: 18px;
+  }
+
+  .super-banner-content h3 {
+    font-size: clamp(1.8rem, 10vw, 2.7rem);
+  }
+
+  .jogo-match {
+    grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .jogo-match .team {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  .jogo-match .team.right {
+    grid-template-columns: minmax(0, 1fr) 38px;
+  }
+
+  .crest {
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+  }
+
+  .crest img {
+    width: 27px;
+    height: 27px;
+  }
+
+  .jogo-match .team strong {
+    font-size: 0.82rem;
+  }
+
+  .versus {
+    width: 34px;
+    height: 34px;
+    font-size: 0.92rem;
+  }
+
+  .jogo-info {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .jogo-info small {
+    text-align: left;
+  }
+}
