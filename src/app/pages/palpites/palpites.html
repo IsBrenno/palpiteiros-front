@@ -67,7 +67,11 @@
           <span>Assim que houver perguntas especiais, elas aparecem aqui.</span>
         </div>
       } @else {
-        <div class="super-carousel">
+        <div
+          class="super-carousel"
+          (mouseenter)="pausarAutoplayBanner()"
+          (mouseleave)="retomarAutoplayBanner()"
+        >
           @if (superPalpitesBanner.length > 1) {
             <button
               type="button"

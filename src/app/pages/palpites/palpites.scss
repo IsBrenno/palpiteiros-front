@@ -1091,3 +1091,204 @@
     text-align: left;
   }
 }
+
+/* =========================================================
+   Refinamento — Super banners desktop + autoplay visual
+   ========================================================= */
+
+.super-banner-card {
+  overflow: hidden;
+}
+
+.super-carousel {
+  position: relative;
+  isolation: isolate;
+}
+
+.super-carousel-viewport {
+  border-radius: 30px;
+  box-shadow:
+    0 18px 42px rgba(15, 23, 42, 0.10),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.super-carousel-track {
+  transition: transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.super-status,
+.super-points,
+.banner-status,
+.banner-points {
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 1000;
+}
+
+.super-status,
+.banner-status {
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.super-status.open,
+.banner-status.open {
+  background: rgba(22, 163, 74, 0.22);
+  color: #bbf7d0;
+}
+
+.super-points,
+.banner-points {
+  background: rgba(250, 204, 21, 0.24);
+  color: #fde68a;
+}
+
+.carousel-arrow {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.74);
+  color: #2563eb;
+
+  font-size: 1.7rem;
+  line-height: 1;
+  font-weight: 1000;
+
+  opacity: 0.68;
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 10px 22px rgba(15, 23, 42, 0.12),
+    inset 0 0 0 1px rgba(56, 189, 248, 0.06);
+
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.carousel-arrow.left {
+  left: 18px;
+}
+
+.carousel-arrow.right {
+  right: 18px;
+}
+
+.carousel-arrow:hover {
+  opacity: 1;
+  background: #ffffff;
+  transform: translateY(-50%) scale(1.04);
+  box-shadow:
+    0 14px 28px rgba(15, 23, 42, 0.16),
+    inset 0 0 0 1px rgba(56, 189, 248, 0.12);
+}
+
+.carousel-dots {
+  align-items: center;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.carousel-dots button {
+  width: 34px;
+  height: 8px;
+  opacity: 0.7;
+  background: rgba(148, 163, 184, 0.28);
+}
+
+.carousel-dots button.active {
+  width: 48px;
+  opacity: 1;
+  background: linear-gradient(90deg, #16a34a, #facc15, #38bdf8);
+}
+
+@media (min-width: 701px) {
+  .super-banner {
+    min-height: 330px;
+  }
+
+  .super-banner-overlay {
+    min-height: 330px;
+    padding: 30px 76px;
+  }
+
+  .super-banner::after {
+    content: '';
+    position: absolute;
+    right: 7%;
+    top: 50%;
+    width: 230px;
+    height: 230px;
+    border-radius: 999px;
+    transform: translateY(-50%);
+    background:
+      radial-gradient(circle, rgba(250, 204, 21, 0.16), transparent 58%),
+      radial-gradient(circle, rgba(56, 189, 248, 0.10), transparent 64%);
+    pointer-events: none;
+  }
+
+  .super-banner-content {
+    max-width: 680px;
+    gap: 10px;
+  }
+
+  .super-banner-content h3 {
+    max-width: 680px;
+    font-size: clamp(2.8rem, 4.5vw, 4.2rem);
+    line-height: 0.92;
+  }
+
+  .super-banner-content p {
+    max-width: 560px;
+    font-size: 0.98rem;
+  }
+
+  .super-banner-answer {
+    max-width: min(100%, 320px);
+  }
+
+  .super-banner-footer {
+    gap: 14px;
+  }
+}
+
+@media (max-width: 700px) {
+  .super-carousel-viewport {
+    border-radius: 26px;
+  }
+
+  .super-banner,
+  .super-banner-overlay {
+    min-height: 420px;
+  }
+
+  .super-banner-overlay {
+    padding: 20px;
+  }
+
+  .super-banner-content h3 {
+    font-size: clamp(2rem, 11vw, 3.2rem);
+  }
+
+  .carousel-arrow {
+    display: none;
+  }
+
+  .carousel-dots button {
+    width: 28px;
+    height: 8px;
+  }
+
+  .carousel-dots button.active {
+    width: 42px;
+  }
+}
