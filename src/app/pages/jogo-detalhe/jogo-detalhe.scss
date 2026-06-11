@@ -795,311 +795,193 @@
 }
 
 /* =========================================================
-   Responsividade corrigida — Detalhe do jogo
-   Mantém o confronto estável no mobile:
-   Time casa | placar/x | Time fora
+   Correção final — Jogo detalhe mobile
+   Remove conflitos antigos de order/grid-column
    ========================================================= */
 
-.match-detail-page,
-.match-detail-page * {
-  box-sizing: border-box;
-}
-
-@media (max-width: 900px) {
-  .match-detail-page {
-    overflow-x: hidden;
-  }
-
-  .page-shell {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .content-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .match-hero,
-  .prediction-card,
-  .info-card {
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-  }
-
-  .hero-top {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .status-pill {
-    width: fit-content;
-  }
-}
-
 @media (max-width: 760px) {
-  .match-detail-page {
-    padding: 16px 12px 42px;
-  }
-
-  .detail-toolbar {
-    margin-bottom: 14px;
-  }
-
-  .back-link {
-    max-width: 100%;
-  }
-
-  .match-hero {
-    padding: 18px;
-    border-radius: 26px;
-  }
-
-  .hero-top h1 {
-    font-size: clamp(2rem, 10vw, 3.2rem);
-    line-height: 0.95;
-  }
-
-  .hero-top p {
-    font-size: 0.9rem;
-    line-height: 1.35;
-  }
-
   /*
-    O ponto principal:
-    nunca deixar o confronto virar uma coluna.
+    Corrige o card principal:
+    Time casa | Placar | Time fora
   */
   .match-board {
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    gap: 10px;
-    align-items: center;
-    padding: 16px 10px;
-    border-radius: 24px;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 76px minmax(0, 1fr) !important;
+    gap: 10px !important;
+    align-items: center !important;
+    padding: 16px 10px !important;
   }
 
-  .team-side {
-    min-width: 0;
-    display: grid;
-    justify-items: center;
-    gap: 8px;
-    text-align: center;
-  }
-
-  .crest-frame {
-    width: 62px;
-    height: 62px;
-    border-radius: 20px;
-  }
-
-  .crest-frame img {
-    width: 44px;
-    height: 44px;
-    object-fit: contain;
-  }
-
-  .crest-frame span {
-    font-size: 0.9rem;
-  }
-
-  .team-side strong {
-    width: 100%;
-    max-width: 100%;
-    min-height: 34px;
-
-    display: -webkit-box;
-    overflow: hidden;
-
-    color: var(--color-text, #111827);
-    font-size: 1.02rem;
-    line-height: 1.04;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: normal;
-
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-  }
-
-  .team-side small {
-    font-size: 0.76rem;
+  .match-board .team-side,
+  .match-board .score-center {
+    order: initial !important;
   }
 
   .score-center {
-    min-width: 72px;
-    padding: 10px 8px;
-    border-radius: 20px;
+    min-width: 0 !important;
+    width: 76px !important;
+    padding: 10px 6px !important;
+    border-radius: 20px !important;
   }
 
   .score-center .date,
   .score-center .hour {
-    font-size: 0.72rem;
-    line-height: 1.2;
-    text-align: center;
+    max-width: 100%;
+    font-size: 0.68rem !important;
+    line-height: 1.15 !important;
+    text-align: center !important;
+    overflow-wrap: anywhere;
   }
 
   .score-center strong {
-    font-size: 2rem;
-    line-height: 0.9;
+    font-size: 1.85rem !important;
+    line-height: 0.9 !important;
   }
 
-  .match-footer {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 8px;
+  .team-side {
+    min-width: 0 !important;
+    display: grid !important;
+    justify-items: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+    text-align: center !important;
   }
 
-  .match-footer span {
-    max-width: 100%;
-    overflow-wrap: anywhere;
+  .crest-frame {
+    width: 58px !important;
+    height: 58px !important;
+    border-radius: 18px !important;
   }
 
-  .prediction-card,
-  .info-card {
-    padding: 18px;
-    border-radius: 26px;
+  .crest-frame img {
+    width: 40px !important;
+    height: 40px !important;
+    object-fit: contain !important;
   }
 
-  .card-header {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 12px;
+  .team-side strong {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 34px !important;
+
+    display: -webkit-box !important;
+    overflow: hidden !important;
+
+    font-size: 0.96rem !important;
+    line-height: 1.05 !important;
+    text-align: center !important;
+    white-space: normal !important;
+    text-overflow: ellipsis !important;
+
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
   }
 
-  .vote-status {
-    width: fit-content;
-  }
-
-  .saved-prediction {
-    grid-template-columns: 1fr;
-  }
-
-  .prediction-options {
-    grid-template-columns: 1fr !important;
-  }
-
-  .prediction-options button {
-    min-height: 86px;
+  .team-side small {
+    font-size: 0.72rem !important;
   }
 
   /*
-    Placar opcional:
-    mantém casa | input | x | input | fora,
-    mas compacto.
+    Corrige o placar opcional:
+    Time casa | input | x | input | Time fora
   */
   .score-input-board {
-    grid-template-columns: minmax(0, 1fr) 54px 28px 54px minmax(0, 1fr);
-    gap: 8px;
-    align-items: center;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 52px 24px 52px minmax(0, 1fr) !important;
+    gap: 8px !important;
+    align-items: center !important;
   }
 
-  .score-team-mini {
-    min-width: 0;
+  .score-team-mini,
+  .score-team-mini.right {
+    grid-column: auto !important;
+    min-width: 0 !important;
+    text-align: center !important;
   }
 
   .score-team-mini strong {
-    width: 100%;
-    display: -webkit-box;
-    overflow: hidden;
-    font-size: 0.86rem;
-    line-height: 1.05;
-    text-overflow: ellipsis;
-    white-space: normal;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    width: 100% !important;
+    max-width: 100% !important;
+
+    display: -webkit-box !important;
+    overflow: hidden !important;
+
+    font-size: 0.82rem !important;
+    line-height: 1.05 !important;
+    text-align: center !important;
+    white-space: normal !important;
+    text-overflow: ellipsis !important;
+
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
   }
 
   .score-team-mini small {
-    font-size: 0.72rem;
+    font-size: 0.68rem !important;
+    text-align: center !important;
   }
 
   .score-input-board input {
-    width: 54px;
-    height: 48px;
-    min-width: 0;
-    padding: 0 6px;
-    text-align: center;
+    width: 52px !important;
+    height: 48px !important;
+    min-width: 0 !important;
+    padding: 0 6px !important;
+    text-align: center !important;
   }
 
   .score-versus {
-    width: 28px;
-    text-align: center;
-  }
-
-  .score-actions {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .score-actions button {
-    width: 100%;
-  }
-
-  .vote-summary-top {
-    grid-template-columns: 1fr !important;
-  }
-
-  .info-list div {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .info-list strong {
-    text-align: left;
-    overflow-wrap: anywhere;
-  }
-
-  .confirm-button {
-    min-height: 50px;
+    width: 24px !important;
+    text-align: center !important;
+    justify-self: center !important;
   }
 }
 
 @media (max-width: 420px) {
-  .match-hero {
-    padding: 16px;
-  }
-
   .match-board {
-    gap: 8px;
-    padding: 14px 8px;
-  }
-
-  .crest-frame {
-    width: 54px;
-    height: 54px;
-  }
-
-  .crest-frame img {
-    width: 38px;
-    height: 38px;
-  }
-
-  .team-side strong {
-    font-size: 0.92rem;
+    grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr) !important;
+    gap: 8px !important;
+    padding: 14px 8px !important;
   }
 
   .score-center {
-    min-width: 62px;
-    padding: 9px 6px;
+    width: 64px !important;
+    padding: 9px 5px !important;
+  }
+
+  .score-center .date,
+  .score-center .hour {
+    font-size: 0.62rem !important;
   }
 
   .score-center strong {
-    font-size: 1.7rem;
+    font-size: 1.55rem !important;
+  }
+
+  .crest-frame {
+    width: 52px !important;
+    height: 52px !important;
+  }
+
+  .crest-frame img {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .team-side strong {
+    font-size: 0.86rem !important;
   }
 
   .score-input-board {
-    grid-template-columns: minmax(0, 1fr) 46px 24px 46px minmax(0, 1fr);
-    gap: 6px;
+    grid-template-columns: minmax(0, 1fr) 46px 22px 46px minmax(0, 1fr) !important;
+    gap: 6px !important;
   }
 
   .score-input-board input {
-    width: 46px;
-    height: 44px;
+    width: 46px !important;
+    height: 44px !important;
   }
 
   .score-team-mini strong {
-    font-size: 0.78rem;
+    font-size: 0.74rem !important;
   }
 }
