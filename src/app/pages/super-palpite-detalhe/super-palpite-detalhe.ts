@@ -64,6 +64,8 @@ export class SuperPalpiteDetalhe implements OnInit {
   carregarSuperPalpite(): void {
     this.carregando = true;
     this.erro = '';
+    this.erroResposta = '';
+    this.sucessoResposta = '';
 
     this.superPalpitesService.buscarSuperPalpite(this.superPalpiteId).subscribe({
       next: (response) => {
@@ -72,7 +74,7 @@ export class SuperPalpiteDetalhe implements OnInit {
 
         this.carregando = false;
 
-        if (this.superPalpite.tipo === 'TIME' || this.superPalpite.usa_lista_times) {
+        if (this.deveCarregarTimes) {
           this.carregarTimes();
         }
 
@@ -98,7 +100,10 @@ export class SuperPalpiteDetalhe implements OnInit {
 
     this.timesService.listarTimes().subscribe({
       next: (response) => {
-        this.times = response.data || [];
+        this.times = (response.data || []).sort((a, b) => {
+          return (a.nome || '').localeCompare(b.nome || '', 'pt-BR');
+        });
+
         this.carregandoTimes = false;
         this.cdr.detectChanges();
       },
@@ -112,27 +117,32 @@ export class SuperPalpiteDetalhe implements OnInit {
     });
   }
 
+  get deveCarregarTimes(): boolean {
+    return this.superPalpite?.tipo === 'TIME' || this.superPalpite?.usa_lista_times === true;
+  }
+
   get timesFiltrados(): TimeCopa[] {
-    const filtro = this.filtroTimes
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .trim();
+    const filtro = this.normalizarTexto(this.filtroTimes);
 
     if (!filtro) {
       return this.times;
     }
 
     return this.times.filter((time) => {
-      const nome = (time.nome || '')
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase();
+      const nome = this.normalizarTexto(time.nome || '');
+      const sigla = this.normalizarTexto(time.sigla || '');
+      const grupo = this.normalizarTexto((time as any).grupo || '');
 
-      const sigla = (time.sigla || '').toLowerCase();
-
-      return nome.includes(filtro) || sigla.includes(filtro);
+      return (
+        nome.includes(filtro) ||
+        sigla.includes(filtro) ||
+        grupo.includes(filtro)
+      );
     });
+  }
+
+  get totalTimesExibidos(): number {
+    return this.timesFiltrados.length;
   }
 
   get podeResponder(): boolean {
@@ -209,7 +219,9 @@ export class SuperPalpiteDetalhe implements OnInit {
     }
 
     if (this.superPalpite.tipo === 'NUMERO') {
-      return this.valorNumero !== null && this.valorNumero !== undefined && this.valorNumero >= 0;
+      return this.valorNumero !== null &&
+        this.valorNumero !== undefined &&
+        this.valorNumero >= 0;
     }
 
     return false;
@@ -281,7 +293,10 @@ export class SuperPalpiteDetalhe implements OnInit {
           }
 
           if (error.status === 400) {
-            this.erroResposta = 'Resposta inválida para este super palpite.';
+            this.erroResposta =
+              error.error?.details ||
+              error.error?.message ||
+              'Resposta inválida para este super palpite.';
             this.cdr.detectChanges();
             return;
           }
@@ -322,7 +337,11 @@ export class SuperPalpiteDetalhe implements OnInit {
   }
 
   siglaTime(time: TimeCopa): string {
-    return time.sigla || this.gerarSigla(time.nome);
+    return time.sigla || this.gerarSigla(time.nome || '');
+  }
+
+  grupoTime(time: TimeCopa): string {
+    return (time as any).grupo || '';
   }
 
   private preencherRespostaAtual(): void {
@@ -341,10 +360,22 @@ export class SuperPalpiteDetalhe implements OnInit {
   }
 
   private gerarSigla(nome: string): string {
+    if (!nome) {
+      return '?';
+    }
+
     return nome
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .slice(0, 3)
       .toUpperCase();
+  }
+
+  private normalizarTexto(texto: string): string {
+    return texto
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
   }
 }

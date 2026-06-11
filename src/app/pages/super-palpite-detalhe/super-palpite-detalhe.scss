@@ -528,3 +528,83 @@
     text-align: left;
   }
 }
+
+.team-search-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.team-search-header span {
+  flex: 0 0 auto;
+  color: var(--color-text-muted, #6b7280);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.teams-grid {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  max-height: none;
+  overflow: visible;
+  padding-right: 0;
+}
+
+.team-option {
+  grid-template-columns: 64px minmax(0, 1fr);
+  justify-items: stretch;
+  align-items: center;
+  min-height: 92px;
+  padding: 14px;
+  text-align: left;
+}
+
+.team-option-info {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.team-option-info strong {
+  min-width: 0;
+  color: var(--color-text, #111827);
+  font-family: var(--font-display, 'Baloo 2', system-ui);
+  font-size: 1.05rem;
+  line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-option-info small {
+  color: var(--color-primary, #2563eb);
+  font-size: 0.82rem;
+  font-weight: 1000;
+}
+
+.team-option-info em {
+  width: fit-content;
+  margin-top: 2px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(22, 163, 74, 0.1);
+  color: var(--color-green, #16a34a);
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.team-option.selected .team-option-info strong {
+  color: var(--color-primary, #2563eb);
+}
+
+@media (max-width: 700px) {
+  .team-search-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .teams-grid {
+    grid-template-columns: 1fr;
+  }
+}

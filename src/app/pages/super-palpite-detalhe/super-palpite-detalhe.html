@@ -65,58 +65,70 @@
             <strong>{{ respostaAtualTexto }}</strong>
           </div>
 
-          @if (superPalpite.tipo === 'TIME') {
-            <div class="team-selector">
+         @if (superPalpite.tipo === 'TIME') {
+          <div class="team-selector">
+            <div class="team-search-header">
               <label for="filtroTimes">Buscar seleção</label>
 
-              <input
-                id="filtroTimes"
-                type="text"
-                placeholder="Digite o nome da seleção..."
-                [(ngModel)]="filtroTimes"
-                [disabled]="!podeResponder"
-              />
-
-              @if (carregandoTimes) {
-                <div class="state-inline">
-                  Carregando seleções...
-                </div>
-              } @else if (timesFiltrados.length === 0) {
-                <div class="state-inline">
-                  Nenhuma seleção encontrada.
-                </div>
-              } @else {
-                <div class="teams-grid">
-                  @for (time of timesFiltrados; track time.id) {
-                    <button
-                      type="button"
-                      class="team-option"
-                      [class.selected]="timeSelecionadoId === time.id"
-                      [disabled]="!podeResponder"
-                      (click)="selecionarTime(time)"
-                    >
-                      <div class="team-crest">
-                        @if (time.brasao_url) {
-                          <img [src]="time.brasao_url" [alt]="time.nome" />
-                        } @else {
-                          <span>{{ siglaTime(time) }}</span>
-                        }
-                      </div>
-
-                      <div class="team-option-info">
-                        <strong>{{ time.nome }}</strong>
-                        <small>{{ siglaTime(time) }}</small>
-
-                        @if (time.grupo) {
-                          <em>{{ time.grupo }}</em>
-                        }
-                      </div>
-                    </button>
-                  }
-                </div>
+              @if (!carregandoTimes) {
+                <span>
+                  {{ totalTimesExibidos }} de {{ times.length }} seleções
+                </span>
               }
             </div>
-          }
+
+            <input
+              id="filtroTimes"
+              type="text"
+              placeholder="Filtrar por nome, sigla ou grupo..."
+              [(ngModel)]="filtroTimes"
+              [disabled]="!podeResponder"
+            />
+
+            @if (carregandoTimes) {
+              <div class="state-inline">
+                Carregando seleções...
+              </div>
+            } @else if (times.length === 0) {
+              <div class="state-inline">
+                Nenhuma seleção foi carregada.
+              </div>
+            } @else if (timesFiltrados.length === 0) {
+              <div class="state-inline">
+                Nenhuma seleção encontrada para "{{ filtroTimes }}".
+              </div>
+            } @else {
+              <div class="teams-grid">
+                @for (time of timesFiltrados; track time.id) {
+                  <button
+                    type="button"
+                    class="team-option"
+                    [class.selected]="timeSelecionadoId === time.id"
+                    [disabled]="!podeResponder"
+                    (click)="selecionarTime(time)"
+                  >
+                    <div class="team-crest">
+                      @if (time.brasao_url) {
+                        <img [src]="time.brasao_url" [alt]="time.nome" />
+                      } @else {
+                        <span>{{ siglaTime(time) }}</span>
+                      }
+                    </div>
+
+                    <div class="team-option-info">
+                      <strong>{{ time.nome }}</strong>
+                      <small>{{ siglaTime(time) }}</small>
+
+                      @if (grupoTime(time)) {
+                        <em>{{ grupoTime(time) }}</em>
+                      }
+                    </div>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        }
 
           @if (superPalpite.tipo === 'OPCAO') {
             <div class="option-selector">
