@@ -350,15 +350,10 @@
                       [style.width.%]="item.percentual"
                     ></div>
                   </div>
-
-                  <small>{{ item.pontos }} pts</small>
                 </div>
 
-                <span
-                  class="trend"
-                  [class.leader]="item.tendencia === 'Líder'"
-                >
-                  {{ item.tendencia }}
+                <span class="trend points-highlight">
+                  {{ item.pontos }} pts
                 </span>
               </div>
             }

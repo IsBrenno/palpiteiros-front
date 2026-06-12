@@ -25,7 +25,6 @@ interface RankingHomeItem {
   pontos: number;
   percentual: number;
   iniciais: string;
-  tendencia: string;
   email: string;
   meu: boolean;
   foto_url: string;
@@ -282,7 +281,6 @@ export class Dashboard implements OnInit {
       pontos: 0,
       percentual: 0,
       iniciais: '--',
-      tendencia: '0',
       email: '',
       meu: false,
       foto_url: ''
@@ -357,7 +355,6 @@ export class Dashboard implements OnInit {
 
     this.router.navigate(['/participantes', encodeURIComponent(email)]);
   }
-
 
   irParaVotacoes(): void {
     this.router.navigate(['/palpites']);
@@ -614,7 +611,6 @@ export class Dashboard implements OnInit {
       pontos: item.total_pontos || 0,
       percentual: this.percentualRanking(item),
       iniciais: this.iniciaisParticipante(item.participante_email),
-      tendencia: this.diferencaParaLider(item),
       email: item.participante_email,
       meu: this.ehMinhaClassificacao(item),
       foto_url: this.fotoParticipanteItem(item)
@@ -631,26 +627,6 @@ export class Dashboard implements OnInit {
     const percentual = (pontos / this.maiorPontuacaoRanking) * 100;
 
     return Math.max(8, Math.min(100, percentual));
-  }
-
-  private diferencaParaLider(item: ClassificacaoItem): string {
-    const lider = this.classificacaoOrdenada[0];
-
-    if (!lider) {
-      return '0';
-    }
-
-    if (lider.participante_email === item.participante_email) {
-      return 'Líder';
-    }
-
-    const diferenca = (lider.total_pontos || 0) - (item.total_pontos || 0);
-
-    if (diferenca <= 0) {
-      return '0';
-    }
-
-    return `-${diferenca}`;
   }
 
   private ehMinhaClassificacao(item: ClassificacaoItem): boolean {

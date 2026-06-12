@@ -92,6 +92,7 @@ export class Classificacao implements OnInit, OnDestroy {
   carregarClassificacao(): void {
     this.carregando = true;
     this.erro = '';
+    this.pararAutoplayBanner();
 
     forkJoin({
       classificacao: this.classificacaoService.listarClassificacao(),
@@ -322,26 +323,6 @@ export class Classificacao implements OnInit, OnDestroy {
     return Math.max(8, Math.min(100, percentual));
   }
 
-  diferencaParaLider(item: ClassificacaoItem): string {
-    const lider = this.lider;
-
-    if (!lider) {
-      return '0';
-    }
-
-    if (item.participante_email === lider.participante_email) {
-      return 'Líder';
-    }
-
-    const diferenca = lider.total_pontos - item.total_pontos;
-
-    if (diferenca <= 0) {
-      return '0';
-    }
-
-    return `-${diferenca}`;
-  }
-
   aproveitamentoResultado(item: ClassificacaoItem): number {
     if (!item.palpites_jogos_feitos) {
       return 0;
@@ -477,6 +458,14 @@ export class Classificacao implements OnInit, OnDestroy {
     this.iniciarAutoplayBanner();
   }
 
+  abrirParticipante(email: string): void {
+    if (!email) {
+      return;
+    }
+
+    this.router.navigate(['/participantes', encodeURIComponent(email)]);
+  }
+
   private ajustarBannerAtivo(): void {
     if (this.bannersJogos.length === 0) {
       this.bannerAtivoIndex = 0;
@@ -498,6 +487,7 @@ export class Classificacao implements OnInit, OnDestroy {
     this.bannerAutoplayId = setInterval(() => {
       this.bannerAtivoIndex =
         (this.bannerAtivoIndex + 1) % this.bannersJogos.length;
+
       this.cdr.detectChanges();
     }, this.bannerAutoplayDelay);
   }
@@ -665,14 +655,6 @@ export class Classificacao implements OnInit, OnDestroy {
       .replace(/[\u0300-\u036f]/g, '')
       .slice(0, 2)
       .toUpperCase();
-  }
-
-  abrirParticipante(email: string): void {
-    if (!email) {
-      return;
-    }
-
-    this.router.navigate(['/participantes', encodeURIComponent(email)]);
   }
 
   private normalizarFotoUrl(url: string): string {
